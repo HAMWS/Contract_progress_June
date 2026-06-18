@@ -1,0 +1,1011 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>렉서스 계약 페이스 분석 — 2026 H1</title>
+<style>
+:root{
+  --navy-950:#0B1626;
+  --navy-900:#0F1F38;
+  --navy-800:#152A4A;
+  --navy-700:#1D3760;
+  --navy-600:#2A4A82;
+  --paper:#F7F5F0;
+  --gold:#C9A961;
+  --gold-soft:#E4D2A0;
+  --coral:#E2654B;
+  --green:#7FBF8F;
+  --weekend:#3A5B8C;
+  --holiday:#B8513B;
+  --ink-soft:#5C6B82;
+  --line:rgba(255,255,255,0.09);
+  --font-display: 'Avenir Next', 'Pretendard', -apple-system, 'Segoe UI', sans-serif;
+  --font-body: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Apple SD Gothic Neo', sans-serif;
+  --font-num: 'Roboto Mono', 'SF Mono', ui-monospace, monospace;
+}
+*{margin:0;padding:0;box-sizing:border-box;}
+html,body{background:var(--navy-950);color:var(--paper);font-family:var(--font-body);}
+body{min-height:100vh;}
+::selection{background:var(--gold-soft);color:var(--navy-950);}
+.wrap{max-width:1320px;margin:0 auto;padding:0 32px 100px;}
+
+/* HERO */
+.hero{position:relative;padding:64px 32px 28px;border-bottom:1px solid var(--line);
+  background:radial-gradient(circle at 85% -10%, rgba(201,169,97,0.16), transparent 55%), linear-gradient(180deg, var(--navy-900), var(--navy-950));}
+.hero-inner{max-width:1320px;margin:0 auto;position:relative;z-index:2;}
+.eyebrow{font-family:var(--font-num);font-size:11px;letter-spacing:.18em;text-transform:uppercase;color:var(--gold);display:flex;align-items:center;gap:10px;margin-bottom:20px;}
+.eyebrow::before{content:'';width:22px;height:1px;background:var(--gold);display:inline-block;}
+h1{font-family:var(--font-display);font-weight:600;font-size:clamp(30px,4vw,46px);letter-spacing:-0.01em;line-height:1.1;color:var(--paper);max-width:880px;}
+h1 .accent{color:var(--gold);font-style:italic;font-weight:500;}
+.hero-sub{margin-top:14px;max-width:640px;font-size:14.5px;line-height:1.6;color:rgba(247,245,240,0.6);}
+.hero-meta{display:flex;gap:32px;margin-top:30px;flex-wrap:wrap;}
+.hero-kpi{min-width:130px;}
+.hero-kpi .num{font-family:var(--font-num);font-size:27px;font-weight:600;color:var(--paper);letter-spacing:-0.02em;}
+.hero-kpi .num small{font-size:13px;color:var(--ink-soft);font-weight:400;margin-left:3px;}
+.hero-kpi .lbl{font-size:11px;color:rgba(247,245,240,0.5);margin-top:5px;}
+.hero-kpi .delta{font-family:var(--font-num);font-size:11.5px;margin-top:4px;}
+.delta.up{color:var(--green);} .delta.down{color:var(--coral);}
+
+/* STICKY MODEL FILTER BAR */
+.filter-bar{
+  position:sticky;top:0;z-index:50;background:rgba(11,22,38,0.92);backdrop-filter:blur(10px);
+  border-bottom:1px solid var(--line);padding:14px 32px;
+}
+.filter-inner{max-width:1320px;margin:0 auto;display:flex;align-items:center;gap:14px;flex-wrap:wrap;}
+.filter-label{font-family:var(--font-num);font-size:11px;color:rgba(247,245,240,0.45);letter-spacing:.06em;margin-right:4px;}
+.model-pill{
+  font-family:var(--font-num);font-size:12.5px;font-weight:600;padding:7px 16px;border-radius:999px;
+  border:1px solid var(--line);background:transparent;color:rgba(247,245,240,0.65);cursor:pointer;transition:all .15s ease;
+}
+.model-pill:hover{border-color:var(--gold-soft);color:var(--paper);}
+.model-pill.active{background:var(--gold);border-color:var(--gold);color:var(--navy-950);}
+.model-pill .cnt{opacity:0.65;font-weight:400;margin-left:5px;}
+.model-pill.active .cnt{opacity:0.7;}
+
+section{padding:56px 0 8px;border-bottom:1px solid var(--line);}
+section:last-of-type{border-bottom:none;}
+.sec-head{display:flex;justify-content:space-between;align-items:baseline;margin-bottom:26px;gap:24px;flex-wrap:wrap;}
+.sec-num{font-family:var(--font-num);font-size:12px;color:var(--gold);letter-spacing:.1em;}
+.sec-title{font-family:var(--font-display);font-size:23px;font-weight:600;color:var(--paper);margin-top:4px;letter-spacing:-0.01em;}
+.sec-note{font-size:12px;color:rgba(247,245,240,0.45);max-width:380px;line-height:1.5;text-align:right;}
+
+.toggle-row{display:flex;gap:8px;flex-wrap:wrap;}
+.toggle-btn{font-family:var(--font-body);font-size:12px;padding:6px 13px;border-radius:999px;border:1px solid var(--line);background:transparent;color:rgba(247,245,240,0.6);cursor:pointer;transition:all .15s ease;}
+.toggle-btn:hover{border-color:var(--gold-soft);color:var(--paper);}
+.toggle-btn.active{background:var(--gold);border-color:var(--gold);color:var(--navy-950);font-weight:600;}
+
+.card{background:var(--navy-800);border:1px solid var(--line);border-radius:14px;padding:24px 26px;}
+.grid-2{display:grid;grid-template-columns:1.5fr 1fr;gap:18px;}
+.grid-3{display:grid;grid-template-columns:repeat(3,1fr);gap:14px;}
+@media(max-width:900px){.grid-2{grid-template-columns:1fr;}}
+@media(max-width:700px){.grid-3{grid-template-columns:1fr;}}
+
+svg text{font-family:var(--font-num);}
+.axis-label{font-size:13px;fill:rgba(247,245,240,0.55);}
+.grid-line{stroke:rgba(247,245,240,0.07);stroke-width:1;}
+
+.tooltip{position:fixed;pointer-events:none;background:var(--navy-950);border:1px solid var(--gold-soft);border-radius:8px;padding:10px 13px;font-family:var(--font-num);font-size:12px;color:var(--paper);z-index:999;opacity:0;transition:opacity .1s;box-shadow:0 8px 24px rgba(0,0,0,0.4);min-width:140px;}
+.tooltip .t-title{color:var(--gold);font-weight:600;margin-bottom:4px;font-size:11px;}
+.tooltip .t-row{display:flex;justify-content:space-between;gap:14px;line-height:1.6;}
+
+.dealer-row{display:flex;align-items:center;gap:12px;padding:9px 0;border-bottom:1px solid var(--line);}
+.dealer-row:last-child{border-bottom:none;}
+.dealer-tag{font-family:var(--font-num);font-size:12px;font-weight:700;color:var(--navy-950);background:var(--gold-soft);border-radius:5px;padding:3px 7px;min-width:32px;text-align:center;}
+.dealer-name{font-size:14px;color:rgba(247,245,240,0.85);min-width:42px;}
+.dealer-bar-track{flex:1;height:8px;background:rgba(255,255,255,0.06);border-radius:5px;overflow:hidden;position:relative;}
+.dealer-bar-fill{height:100%;border-radius:5px;}
+.dealer-bar-marker{position:absolute;top:-3px;width:2px;height:14px;background:var(--paper);opacity:0.8;}
+.dealer-val{font-family:var(--font-num);font-size:14px;min-width:96px;text-align:right;color:var(--paper);}
+.dealer-val small{color:var(--ink-soft);font-size:12px;}
+
+.cal-month-block{margin-bottom:24px;}
+.cal-grid{display:grid;grid-template-columns:repeat(7,1fr);gap:5px;}
+.cal-dow{font-size:12px;color:rgba(247,245,240,0.35);text-align:center;padding-bottom:4px;}
+.cal-cell{aspect-ratio:1;border-radius:6px;display:flex;flex-direction:column;align-items:center;justify-content:center;font-family:var(--font-num);position:relative;border:1px solid rgba(255,255,255,0.04);}
+.cal-cell .d-num{font-size:11px;color:rgba(247,245,240,0.4);position:absolute;top:3px;left:5px;}
+.cal-cell .d-val{font-size:14px;font-weight:600;color:var(--paper);}
+.cal-cell.empty{visibility:hidden;}
+.cal-legend{display:flex;gap:16px;margin-top:14px;align-items:center;flex-wrap:wrap;}
+.legend-item{display:flex;align-items:center;gap:6px;font-size:13px;color:rgba(247,245,240,0.55);}
+.legend-swatch{width:11px;height:11px;border-radius:3px;}
+
+.model-legend{display:flex;gap:14px;flex-wrap:wrap;margin-top:12px;}
+.model-item{display:flex;align-items:center;gap:6px;font-size:13px;color:rgba(247,245,240,0.6);}
+.model-swatch{width:10px;height:10px;border-radius:2px;}
+
+.insight{background:linear-gradient(135deg, rgba(201,169,97,0.1), rgba(201,169,97,0.02));border-left:2px solid var(--gold);border-radius:0 10px 10px 0;padding:15px 19px;font-size:14px;line-height:1.6;color:rgba(247,245,240,0.78);}
+.insight b{color:var(--gold-soft);font-weight:600;}
+
+table{width:100%;border-collapse:collapse;font-size:13.5px;}
+th{font-family:var(--font-num);font-size:11.5px;text-transform:uppercase;letter-spacing:.04em;color:rgba(247,245,240,0.45);text-align:right;padding:8px 9px;border-bottom:1px solid var(--line);font-weight:500;}
+th:first-child,td:first-child{text-align:left;}
+td{padding:8px 9px;text-align:right;border-bottom:1px solid rgba(255,255,255,0.04);font-family:var(--font-num);color:rgba(247,245,240,0.85);}
+tr:hover td{background:rgba(255,255,255,0.02);}
+td.hi{color:var(--gold-soft);font-weight:600;}
+td.name{font-family:var(--font-body);color:var(--paper);font-weight:500;}
+td.pos{color:var(--green);} td.neg{color:var(--coral);}
+
+footer{padding:36px 32px;text-align:center;font-size:11px;color:rgba(247,245,240,0.32);}
+.scroll-x{overflow-x:auto;}
+.scroll-x::-webkit-scrollbar{height:6px;}
+.scroll-x::-webkit-scrollbar-thumb{background:var(--navy-700);border-radius:3px;}
+
+@media(max-width:700px){
+  .wrap{padding:0 16px 60px;}
+  .hero{padding:44px 16px 24px;}
+  .filter-bar{padding:12px 16px;}
+  .sec-note{display:none;}
+}
+</style>
+</head>
+<body>
+<div class="tooltip" id="tooltip"></div>
+
+<div class="hero">
+  <div class="hero-inner">
+    <div class="eyebrow">LEXUS KOREA · 8 DEALER NETWORK · CONTRACT PACE REPORT</div>
+    <h1>2026년 상반기 계약 추이,<br>역량 대비 <span class="accent">실적으로 다시 읽다</span></h1>
+    <p class="hero-sub">1월 1일부터 6월 16일까지, 8개 딜러 167일의 계약 데이터를 영업일 캘린더와 딜러별 배정비율에 맞춰 정렬했습니다.</p>
+    <div class="hero-meta" id="heroKpis"></div>
+  </div>
+</div>
+
+<div class="filter-bar">
+  <div class="filter-inner">
+    <span class="filter-label">MODEL FILTER</span>
+    <div id="modelPills"></div>
+  </div>
+</div>
+
+<div class="wrap">
+
+  <section id="sec-monthly">
+    <div class="sec-head">
+      <div><div class="sec-num">01 — MONTHLY</div><div class="sec-title">월별 추이</div></div>
+      <div class="sec-note">총계약 기준(취소 포함) · 6월은 16일까지 부분월이라 일평균으로 비교합니다.</div>
+    </div>
+    <div class="grid-2">
+      <div class="card"><div id="monthlyChart"></div></div>
+      <div class="card">
+        <div style="font-size:12px;color:rgba(247,245,240,0.5);margin-bottom:12px;">월별 일평균 페이스</div>
+        <div id="monthlyAvgList"></div>
+      </div>
+    </div>
+    <div style="margin-top:16px;" id="monthlyInsight" class="insight"></div>
+  </section>
+
+  <section id="sec-weekly">
+    <div class="sec-head">
+      <div><div class="sec-num">02 — WEEKLY</div><div class="sec-title">주차별 추이 — 평일 / 주말 분리 비교</div></div>
+      <div class="sec-note">매월 1~7일을 1주차로 고정 분할. 합계가 아닌 일평균으로 비교(부분 주차 왜곡 방지). 두 표를 완전히 분리해 각자의 추세를 명확히 봅니다.</div>
+    </div>
+    <div style="font-size:12px;color:rgba(247,245,240,0.5);margin-bottom:10px;">평일 일평균 추이</div>
+    <div class="card" style="margin-bottom:20px;"><div id="weeklyChartWeekday"></div></div>
+    <div style="font-size:12px;color:rgba(247,245,240,0.5);margin-bottom:10px;">주말/공휴일 일평균 추이</div>
+    <div class="card"><div id="weeklyChartWeekend"></div></div>
+    <div style="margin-top:16px;" class="insight" id="weeklyInsight"></div>
+  </section>
+
+  <section id="sec-junefocus">
+    <div class="sec-head">
+      <div><div class="sec-num">02B — JUNE FOCUS</div><div class="sec-title">6월 집중 분석 — 일별 트렌드</div></div>
+      <div class="sec-note">현재 진행 중인 달이므로 별도로 분리해 일별 변화와 주차 간 흐름을 확인합니다.</div>
+    </div>
+    <div class="card"><div id="juneFocusChart"></div></div>
+    <div class="grid-3" id="juneWeekCards" style="margin-top:16px;"></div>
+    <div style="margin-top:16px;" class="insight" id="juneFocusInsight"></div>
+  </section>
+
+  <section id="sec-forecast">
+    <div class="sec-head">
+      <div><div class="sec-num">02C — JUNE FORECAST</div><div class="sec-title">6월 전체 결과 예상</div></div>
+      <div class="sec-note">1~5월 패턴을 바탕으로 두 가지 방법으로 6월 전체 결과를 추정해 비교합니다. 실제 프로모션·재고 변화는 반영되지 않은 추정치입니다.</div>
+    </div>
+    <div class="grid-3" id="forecastCards"></div>
+    <div class="grid-2" style="margin-top:18px;">
+      <div class="card"><div style="font-size:13px;color:rgba(247,245,240,0.5);margin-bottom:12px;">딜러별 6월 전체 예상</div><div class="scroll-x"><table id="forecastDealerTable"></table></div></div>
+      <div class="card"><div style="font-size:13px;color:rgba(247,245,240,0.5);margin-bottom:12px;">모델별 6월 전체 예상</div><div class="scroll-x"><table id="forecastModelTable"></table></div></div>
+    </div>
+    <div style="margin-top:16px;" class="insight" id="forecastInsight"></div>
+  </section>
+
+  <section id="sec-dealer">
+    <div class="sec-head">
+      <div><div class="sec-num">03 — BY DEALER</div><div class="sec-title">딜러별 비교</div></div>
+      <div class="toggle-row" id="dealerMonthTabs"></div>
+    </div>
+    <div class="grid-2">
+      <div class="card">
+        <div style="font-size:12px;color:rgba(247,245,240,0.5);margin-bottom:6px;" id="dealerCardLabel">월간 계약건수</div>
+        <div id="dealerBars"></div>
+      </div>
+      <div class="card"><div style="font-size:12px;color:rgba(247,245,240,0.5);margin-bottom:12px;">딜러별 6개월 추이</div><div id="dealerTrendChart"></div></div>
+    </div>
+  </section>
+
+  <section id="sec-allocation">
+    <div class="sec-head">
+      <div><div class="sec-num">04 — ALLOCATION vs PERFORMANCE</div><div class="sec-title">배정비율 대비 실적비율</div></div>
+      <div class="toggle-row" id="allocMonthTabs"></div>
+    </div>
+    <div class="sec-note" style="text-align:left;max-width:none;margin-bottom:16px;">매년 배정되는 차량 비율(역량 기준선) 대비, 선택한 기간의 실적비중이 높으면 초과달성, 낮으면 미달입니다. 월별 탭과 "합계"(1/1~6/16 누적)를 모두 확인할 수 있습니다.</div>
+    <div class="card"><div id="allocationChart"></div></div>
+    <div style="margin-top:16px;" class="insight" id="allocationInsight"></div>
+  </section>
+
+  <section id="sec-calendar">
+    <div class="sec-head">
+      <div><div class="sec-num">05 — CALENDAR</div><div class="sec-title">일별 캘린더 히트맵</div></div>
+      <div class="toggle-row" id="calMonthTabs"></div>
+    </div>
+    <div class="card">
+      <div id="calendarView"></div>
+      <div class="cal-legend">
+        <div class="legend-item"><span class="legend-swatch" style="background:#1D3760"></span>평일</div>
+        <div class="legend-item"><span class="legend-swatch" style="background:#3A5B8C"></span>주말</div>
+        <div class="legend-item"><span class="legend-swatch" style="background:#B8513B"></span>공휴일</div>
+        <div class="legend-item"><span class="legend-swatch" style="background:#C9A961"></span>고계약일(상위 15%)</div>
+      </div>
+    </div>
+    <div style="margin-top:16px;" class="insight" id="calendarInsight"></div>
+  </section>
+
+  <section id="sec-table">
+    <div class="sec-head">
+      <div><div class="sec-num">06 — DETAIL</div><div class="sec-title">딜러 × 월별 상세표</div></div>
+    </div>
+    <div class="card"><div class="scroll-x"><table id="detailTable"></table></div></div>
+    <div id="detailTableNote" style="font-size:11.5px;color:rgba(247,245,240,0.4);margin-top:10px;line-height:1.5;"></div>
+  </section>
+
+</div>
+
+<footer id="footerNote">렉서스 코리아 8개 딜러 계약 데이터 · 2026.01.01–06.16 · 시승차·딜러임직원·회사차·TFSKR임직원·임직원특별판매 제외 · 총계약 기준(취소 포함)</footer>
+
+<script id="data-island" type="application/json">
+{"dealerOrder":["GN","YS","BD","IC","BS","GJ","DG","DJ"],"dealerKr":{"GN":"강남","YS":"용산","BD":"분당","IC":"인천","BS":"부산","GJ":"광주","DG":"대구","DJ":"대전"},"modelOrder":["LS","ES","RX","NX","UX","LM","LX"],"allocation":{"GN":27.5,"YS":17.2,"BD":15.1,"IC":7.5,"BS":11.2,"GJ":5.7,"DG":10.7,"DJ":5.1},"days":[{"d":"2026-01-01","wd":"목","dt":"공휴일","mo":1,"day":1,"wl":"1월 1주","v":{"GN":[0,3,2,2,1,2,0],"YS":[0,1,4,2,0,0,0],"BD":[0,1,1,1,0,0,0],"IC":[0,2,1,0,0,0,0],"BS":[0,3,0,2,0,0,0],"GJ":[0,1,3,1,0,0,0],"DG":[0,2,1,1,0,0,0],"DJ":[0,4,1,4,1,0,0]}},{"d":"2026-01-02","wd":"금","dt":"평일","mo":1,"day":2,"wl":"1월 1주","v":{"GN":[0,2,0,6,1,2,2],"YS":[0,2,1,2,1,1,0],"BD":[0,0,0,1,1,1,0],"IC":[0,2,0,1,1,1,0],"BS":[0,3,0,2,0,0,0],"GJ":[0,2,1,2,1,0,0],"DG":[0,4,2,10,0,1,0],"DJ":[0,1,2,3,0,0,0]}},{"d":"2026-01-03","wd":"토","dt":"주말","mo":1,"day":3,"wl":"1월 1주","v":{"GN":[0,6,4,4,2,0,0],"YS":[0,1,3,2,0,0,0],"BD":[0,1,1,3,0,0,0],"IC":[0,1,1,1,0,0,0],"BS":[0,2,0,1,0,0,0],"GJ":[0,1,0,0,0,0,0],"DG":[0,0,0,1,0,0,0],"DJ":[0,0,0,0,1,0,0]}},{"d":"2026-01-04","wd":"일","dt":"주말","mo":1,"day":4,"wl":"1월 1주","v":{"GN":[0,0,5,3,1,0,0],"YS":[0,2,2,2,1,0,1],"BD":[0,2,1,1,1,0,0],"IC":[0,2,1,1,0,0,0],"BS":[0,6,0,3,2,0,0],"GJ":[0,0,0,0,0,0,0],"DG":[0,0,1,2,0,0,0],"DJ":[0,4,0,0,0,0,0]}},{"d":"2026-01-05","wd":"월","dt":"평일","mo":1,"day":5,"wl":"1월 1주","v":{"GN":[0,2,0,5,0,2,0],"YS":[0,1,1,7,0,0,1],"BD":[0,2,0,1,1,1,0],"IC":[0,3,0,2,1,2,0],"BS":[0,1,2,3,0,0,0],"GJ":[0,5,1,1,0,0,0],"DG":[0,2,5,4,0,2,0],"DJ":[0,4,1,3,0,1,0]}},{"d":"2026-01-06","wd":"화","dt":"평일","mo":1,"day":6,"wl":"1월 1주","v":{"GN":[1,7,5,3,2,4,0],"YS":[0,2,0,11,1,0,1],"BD":[0,3,0,2,0,1,0],"IC":[0,2,0,1,0,0,0],"BS":[0,2,0,0,0,0,2],"GJ":[0,1,0,0,0,0,0],"DG":[0,1,2,1,1,0,0],"DJ":[0,0,0,0,0,0,1]}},{"d":"2026-01-07","wd":"수","dt":"평일","mo":1,"day":7,"wl":"1월 1주","v":{"GN":[0,2,3,4,4,0,0],"YS":[0,3,1,6,2,1,0],"BD":[1,0,2,2,0,1,2],"IC":[0,1,3,3,0,0,0],"BS":[0,4,0,1,3,0,0],"GJ":[0,0,1,1,0,0,0],"DG":[0,3,0,3,0,1,0],"DJ":[0,0,0,1,0,0,0]}},{"d":"2026-01-08","wd":"목","dt":"평일","mo":1,"day":8,"wl":"1월 2주","v":{"GN":[0,2,6,1,0,1,0],"YS":[0,0,2,2,0,2,0],"BD":[0,1,0,8,0,0,0],"IC":[0,2,0,1,0,0,0],"BS":[0,2,1,1,0,0,0],"GJ":[0,0,0,2,0,0,0],"DG":[0,0,1,0,0,0,0],"DJ":[0,1,0,0,0,0,0]}},{"d":"2026-01-09","wd":"금","dt":"평일","mo":1,"day":9,"wl":"1월 2주","v":{"GN":[0,3,2,5,4,4,0],"YS":[0,3,4,5,0,3,0],"BD":[0,8,4,1,0,0,0],"IC":[0,1,0,2,0,0,0],"BS":[0,3,1,4,0,0,0],"GJ":[0,2,0,0,0,0,0],"DG":[0,0,1,1,0,0,0],"DJ":[0,0,0,2,0,0,1]}},{"d":"2026-01-10","wd":"토","dt":"주말","mo":1,"day":10,"wl":"1월 2주","v":{"GN":[1,3,4,10,1,0,0],"YS":[0,1,0,2,0,0,0],"BD":[0,3,3,5,1,0,0],"IC":[0,2,0,0,1,0,1],"BS":[0,5,2,2,0,0,0],"GJ":[0,2,0,1,2,0,0],"DG":[0,1,1,1,0,0,0],"DJ":[1,2,0,0,0,0,0]}},{"d":"2026-01-11","wd":"일","dt":"주말","mo":1,"day":11,"wl":"1월 2주","v":{"GN":[0,7,3,6,2,0,1],"YS":[0,2,1,2,1,0,0],"BD":[0,5,1,4,0,1,0],"IC":[0,1,0,1,1,0,0],"BS":[0,3,1,1,1,0,0],"GJ":[0,0,1,1,0,0,0],"DG":[0,1,0,2,0,0,0],"DJ":[0,0,1,1,0,0,0]}},{"d":"2026-01-12","wd":"월","dt":"평일","mo":1,"day":12,"wl":"1월 2주","v":{"GN":[0,9,2,7,1,1,1],"YS":[0,4,1,5,0,0,1],"BD":[1,3,2,2,0,0,0],"IC":[0,1,2,0,0,0,0],"BS":[0,1,0,1,0,1,0],"GJ":[0,0,0,0,0,0,0],"DG":[0,1,3,0,0,0,0],"DJ":[0,0,0,0,0,0,0]}},{"d":"2026-01-13","wd":"화","dt":"평일","mo":1,"day":13,"wl":"1월 2주","v":{"GN":[0,1,4,5,1,1,2],"YS":[0,5,2,4,0,0,0],"BD":[0,2,2,4,0,0,0],"IC":[0,1,0,3,1,0,0],"BS":[0,4,1,4,2,0,0],"GJ":[0,1,0,2,0,1,0],"DG":[0,1,1,0,0,0,0],"DJ":[0,1,1,1,0,0,0]}},{"d":"2026-01-14","wd":"수","dt":"평일","mo":1,"day":14,"wl":"1월 2주","v":{"GN":[1,3,1,2,0,3,0],"YS":[1,5,0,0,2,1,0],"BD":[0,4,0,3,0,0,0],"IC":[0,0,1,0,0,0,0],"BS":[0,2,2,1,0,1,0],"GJ":[0,1,1,0,0,1,0],"DG":[0,1,2,2,0,0,0],"DJ":[0,2,0,1,1,1,0]}},{"d":"2026-01-15","wd":"목","dt":"평일","mo":1,"day":15,"wl":"1월 3주","v":{"GN":[0,7,5,6,1,8,0],"YS":[0,4,3,4,0,3,0],"BD":[0,2,1,3,0,0,0],"IC":[0,1,0,0,0,0,0],"BS":[0,2,0,0,0,0,0],"GJ":[0,3,3,0,0,0,0],"DG":[0,0,1,5,0,1,0],"DJ":[0,2,0,1,0,0,0]}},{"d":"2026-01-16","wd":"금","dt":"평일","mo":1,"day":16,"wl":"1월 3주","v":{"GN":[0,4,0,2,1,1,0],"YS":[1,9,3,6,0,0,0],"BD":[1,1,3,2,1,0,1],"IC":[0,2,1,1,0,0,0],"BS":[0,3,1,2,0,2,0],"GJ":[0,2,1,0,0,0,0],"DG":[1,1,3,2,0,0,0],"DJ":[0,0,0,0,0,0,0]}},{"d":"2026-01-17","wd":"토","dt":"주말","mo":1,"day":17,"wl":"1월 3주","v":{"GN":[0,4,2,7,1,0,0],"YS":[0,1,2,5,1,1,0],"BD":[0,4,2,6,2,0,0],"IC":[0,5,0,2,0,0,0],"BS":[0,1,1,3,2,0,0],"GJ":[0,2,0,1,0,0,0],"DG":[0,3,0,1,1,0,0],"DJ":[1,0,0,2,1,0,0]}},{"d":"2026-01-18","wd":"일","dt":"주말","mo":1,"day":18,"wl":"1월 3주","v":{"GN":[0,4,1,4,2,0,1],"YS":[0,5,2,3,1,0,0],"BD":[0,4,5,6,0,2,0],"IC":[0,2,1,1,0,0,0],"BS":[0,1,1,1,1,0,0],"GJ":[0,1,0,2,1,0,0],"DG":[0,4,3,2,1,0,0],"DJ":[0,1,0,0,0,0,0]}},{"d":"2026-01-19","wd":"월","dt":"평일","mo":1,"day":19,"wl":"1월 3주","v":{"GN":[0,4,4,9,2,3,0],"YS":[0,2,1,0,0,0,0],"BD":[1,3,1,3,1,0,0],"IC":[0,1,0,0,1,0,0],"BS":[1,3,0,1,1,1,2],"GJ":[0,3,0,3,1,2,0],"DG":[0,2,1,2,0,0,0],"DJ":[0,0,0,1,0,0,0]}},{"d":"2026-01-20","wd":"화","dt":"평일","mo":1,"day":20,"wl":"1월 3주","v":{"GN":[0,5,4,4,0,0,2],"YS":[0,3,1,2,1,0,0],"BD":[0,3,2,2,0,0,0],"IC":[0,3,0,2,0,2,0],"BS":[0,2,3,4,1,0,0],"GJ":[0,1,0,0,0,0,0],"DG":[0,0,0,1,0,0,0],"DJ":[0,0,1,0,1,0,0]}},{"d":"2026-01-21","wd":"수","dt":"평일","mo":1,"day":21,"wl":"1월 3주","v":{"GN":[0,2,1,0,1,0,0],"YS":[0,1,1,4,0,1,1],"BD":[0,3,1,4,0,0,0],"IC":[0,0,1,1,1,0,0],"BS":[0,1,0,2,0,0,0],"GJ":[0,2,0,0,0,0,1],"DG":[0,1,1,3,0,0,0],"DJ":[0,0,0,1,0,0,0]}},{"d":"2026-01-22","wd":"목","dt":"평일","mo":1,"day":22,"wl":"1월 4주","v":{"GN":[0,7,6,6,1,1,0],"YS":[0,7,0,3,1,0,1],"BD":[0,1,1,0,1,1,0],"IC":[0,1,0,1,0,0,0],"BS":[0,1,1,1,0,0,1],"GJ":[0,0,0,0,0,0,0],"DG":[0,1,2,1,1,0,0],"DJ":[0,2,0,1,0,0,0]}},{"d":"2026-01-23","wd":"금","dt":"평일","mo":1,"day":23,"wl":"1월 4주","v":{"GN":[0,6,1,1,1,1,1],"YS":[0,1,0,5,1,0,1],"BD":[0,2,0,1,1,2,0],"IC":[0,1,1,1,0,1,0],"BS":[0,2,1,2,0,0,1],"GJ":[0,0,0,0,1,0,0],"DG":[0,0,1,0,0,1,0],"DJ":[0,2,0,0,0,0,0]}},{"d":"2026-01-24","wd":"토","dt":"주말","mo":1,"day":24,"wl":"1월 4주","v":{"GN":[0,4,0,3,1,0,0],"YS":[0,4,2,4,0,0,0],"BD":[0,1,0,2,0,0,0],"IC":[0,6,0,2,0,0,0],"BS":[0,1,1,2,1,0,1],"GJ":[0,2,1,1,0,1,0],"DG":[0,2,0,3,0,0,0],"DJ":[0,0,1,0,0,0,0]}},{"d":"2026-01-25","wd":"일","dt":"주말","mo":1,"day":25,"wl":"1월 4주","v":{"GN":[0,6,3,6,1,0,0],"YS":[0,4,1,1,0,0,0],"BD":[0,4,2,9,3,0,0],"IC":[0,0,0,0,1,0,0],"BS":[0,3,0,2,0,0,0],"GJ":[0,0,0,1,0,0,0],"DG":[0,0,1,1,0,0,0],"DJ":[0,1,1,2,0,0,0]}},{"d":"2026-01-26","wd":"월","dt":"평일","mo":1,"day":26,"wl":"1월 4주","v":{"GN":[0,5,0,2,0,1,1],"YS":[0,2,0,1,0,0,0],"BD":[0,2,1,2,0,0,0],"IC":[0,2,1,2,0,0,0],"BS":[0,2,1,3,2,0,1],"GJ":[0,2,2,0,0,0,0],"DG":[0,3,2,2,0,0,0],"DJ":[0,0,0,0,0,0,0]}},{"d":"2026-01-27","wd":"화","dt":"평일","mo":1,"day":27,"wl":"1월 4주","v":{"GN":[1,5,1,7,1,2,0],"YS":[0,1,2,4,0,0,0],"BD":[0,1,1,3,0,0,1],"IC":[0,1,3,1,0,1,0],"BS":[0,1,0,0,0,0,0],"GJ":[0,0,0,1,1,0,0],"DG":[0,3,0,1,1,1,0],"DJ":[0,0,0,1,0,0,0]}},{"d":"2026-01-28","wd":"수","dt":"평일","mo":1,"day":28,"wl":"1월 4주","v":{"GN":[0,4,2,5,1,0,0],"YS":[0,1,2,2,2,0,1],"BD":[0,1,2,4,0,0,0],"IC":[0,2,0,1,0,0,0],"BS":[0,2,1,0,0,0,1],"GJ":[0,2,0,1,0,1,0],"DG":[0,1,0,4,1,0,0],"DJ":[0,0,2,0,0,0,0]}},{"d":"2026-01-29","wd":"목","dt":"평일","mo":1,"day":29,"wl":"1월 5주","v":{"GN":[0,4,2,3,0,3,0],"YS":[0,1,2,4,1,0,0],"BD":[0,2,2,0,0,0,0],"IC":[0,1,0,0,0,0,0],"BS":[1,3,1,0,0,0,0],"GJ":[0,1,0,1,0,0,0],"DG":[0,1,1,2,0,0,0],"DJ":[0,1,0,0,0,0,0]}},{"d":"2026-01-30","wd":"금","dt":"평일","mo":1,"day":30,"wl":"1월 5주","v":{"GN":[0,2,5,0,0,1,0],"YS":[0,4,2,1,0,0,0],"BD":[0,1,2,3,0,0,0],"IC":[0,0,0,0,0,0,0],"BS":[0,1,2,1,0,0,0],"GJ":[0,2,0,0,0,2,0],"DG":[0,0,2,3,3,0,0],"DJ":[0,2,0,0,0,1,0]}},{"d":"2026-01-31","wd":"토","dt":"주말","mo":1,"day":31,"wl":"1월 5주","v":{"GN":[0,8,7,9,4,3,0],"YS":[0,5,2,4,1,0,0],"BD":[0,2,3,3,0,0,0],"IC":[0,1,0,1,0,0,0],"BS":[0,0,0,2,0,0,0],"GJ":[0,0,0,0,0,0,0],"DG":[0,0,0,1,0,0,0],"DJ":[0,0,1,1,1,0,0]}},{"d":"2026-02-01","wd":"일","dt":"주말","mo":2,"day":1,"wl":"2월 1주","v":{"GN":[0,5,3,13,4,0,0],"YS":[0,11,1,9,1,0,0],"BD":[0,2,3,5,2,0,0],"IC":[0,1,1,0,0,0,0],"BS":[0,1,0,2,0,0,1],"GJ":[0,0,0,2,1,0,0],"DG":[0,1,2,2,0,0,0],"DJ":[0,1,1,0,0,0,0]}},{"d":"2026-02-02","wd":"월","dt":"평일","mo":2,"day":2,"wl":"2월 1주","v":{"GN":[0,5,4,2,3,1,0],"YS":[0,2,3,1,2,1,0],"BD":[0,3,2,3,1,1,0],"IC":[1,1,0,1,1,0,0],"BS":[0,5,5,1,0,2,0],"GJ":[0,3,2,2,0,2,0],"DG":[0,5,3,3,0,0,0],"DJ":[1,0,1,2,0,0,0]}},{"d":"2026-02-03","wd":"화","dt":"평일","mo":2,"day":3,"wl":"2월 1주","v":{"GN":[0,3,3,7,0,0,0],"YS":[0,3,1,1,1,1,1],"BD":[0,1,0,3,0,0,0],"IC":[0,0,0,0,0,0,0],"BS":[0,4,1,3,0,1,0],"GJ":[0,1,1,1,0,1,2],"DG":[0,0,2,1,0,1,0],"DJ":[0,0,0,1,1,0,0]}},{"d":"2026-02-04","wd":"수","dt":"평일","mo":2,"day":4,"wl":"2월 1주","v":{"GN":[2,1,3,0,2,6,0],"YS":[0,4,4,2,2,4,0],"BD":[1,5,2,2,1,2,2],"IC":[0,3,3,0,1,0,1],"BS":[0,1,1,0,0,1,0],"GJ":[0,2,4,1,0,0,1],"DG":[0,1,1,2,0,0,0],"DJ":[0,1,2,0,0,0,0]}},{"d":"2026-02-05","wd":"목","dt":"평일","mo":2,"day":5,"wl":"2월 1주","v":{"GN":[0,9,4,3,1,0,0],"YS":[0,6,0,0,2,0,2],"BD":[0,4,2,2,2,0,0],"IC":[0,4,1,1,0,2,1],"BS":[0,4,0,2,2,0,0],"GJ":[0,1,0,0,0,0,0],"DG":[0,0,0,1,0,0,1],"DJ":[0,1,1,0,0,0,0]}},{"d":"2026-02-06","wd":"금","dt":"평일","mo":2,"day":6,"wl":"2월 1주","v":{"GN":[0,3,5,4,2,0,0],"YS":[0,2,3,0,0,1,1],"BD":[0,0,1,3,0,0,0],"IC":[0,1,1,1,0,0,0],"BS":[0,2,5,1,0,0,0],"GJ":[0,1,0,0,0,0,0],"DG":[0,0,0,1,0,0,1],"DJ":[0,0,0,2,0,0,0]}},{"d":"2026-02-07","wd":"토","dt":"주말","mo":2,"day":7,"wl":"2월 1주","v":{"GN":[0,10,0,5,2,0,1],"YS":[0,2,0,2,0,0,0],"BD":[0,3,0,5,2,0,0],"IC":[0,2,1,1,0,0,0],"BS":[0,0,1,2,0,0,0],"GJ":[0,0,0,1,0,0,0],"DG":[0,1,0,1,0,0,0],"DJ":[0,1,1,0,2,0,0]}},{"d":"2026-02-08","wd":"일","dt":"주말","mo":2,"day":8,"wl":"2월 2주","v":{"GN":[0,6,4,5,3,0,0],"YS":[0,5,0,3,2,0,0],"BD":[0,4,3,7,0,0,0],"IC":[0,3,0,0,0,0,0],"BS":[0,2,2,2,1,0,0],"GJ":[0,2,0,1,1,0,0],"DG":[0,0,1,2,0,0,0],"DJ":[0,0,0,1,0,0,0]}},{"d":"2026-02-09","wd":"월","dt":"평일","mo":2,"day":9,"wl":"2월 2주","v":{"GN":[0,6,3,2,2,2,0],"YS":[0,5,5,2,0,1,1],"BD":[1,3,4,2,0,0,0],"IC":[0,3,1,1,0,0,0],"BS":[0,4,2,3,1,1,0],"GJ":[0,1,0,1,0,2,1],"DG":[0,2,2,4,0,0,0],"DJ":[0,1,0,3,0,0,0]}},{"d":"2026-02-10","wd":"화","dt":"평일","mo":2,"day":10,"wl":"2월 2주","v":{"GN":[0,2,2,2,1,1,2],"YS":[1,6,4,4,1,1,0],"BD":[0,2,3,5,0,1,0],"IC":[0,1,0,2,0,0,1],"BS":[0,5,0,1,0,0,1],"GJ":[0,1,2,0,0,0,0],"DG":[0,0,0,0,0,0,0],"DJ":[0,1,2,1,0,0,0]}},{"d":"2026-02-11","wd":"수","dt":"평일","mo":2,"day":11,"wl":"2월 2주","v":{"GN":[0,5,4,6,1,0,6],"YS":[0,1,7,7,0,0,1],"BD":[0,0,4,2,0,4,0],"IC":[0,1,2,2,0,0,0],"BS":[0,0,0,1,0,1,0],"GJ":[1,2,0,2,0,0,1],"DG":[0,0,1,4,0,0,0],"DJ":[0,1,1,2,0,0,0]}},{"d":"2026-02-12","wd":"목","dt":"평일","mo":2,"day":12,"wl":"2월 2주","v":{"GN":[0,6,6,5,1,0,0],"YS":[0,5,4,4,0,0,2],"BD":[0,6,1,3,2,1,0],"IC":[0,0,0,0,0,1,0],"BS":[0,4,0,2,1,0,0],"GJ":[0,1,0,2,1,0,0],"DG":[1,1,0,1,0,0,0],"DJ":[0,1,1,1,1,0,0]}},{"d":"2026-02-13","wd":"금","dt":"평일","mo":2,"day":13,"wl":"2월 2주","v":{"GN":[0,1,4,8,0,0,0],"YS":[0,0,3,1,0,0,0],"BD":[0,4,1,2,1,2,0],"IC":[0,0,1,0,0,0,0],"BS":[0,0,0,0,1,1,0],"GJ":[0,0,0,1,0,0,0],"DG":[0,2,1,1,0,0,0],"DJ":[0,1,0,0,0,0,0]}},{"d":"2026-02-14","wd":"토","dt":"주말","mo":2,"day":14,"wl":"2월 2주","v":{"GN":[0,0,4,2,3,0,0],"YS":[0,1,3,1,0,0,0],"BD":[0,4,0,4,0,0,0],"IC":[0,0,3,2,0,0,0],"BS":[0,3,0,4,1,1,0],"GJ":[0,1,1,2,0,0,0],"DG":[0,5,2,2,4,0,0],"DJ":[0,1,1,0,1,0,0]}},{"d":"2026-02-15","wd":"일","dt":"주말","mo":2,"day":15,"wl":"2월 3주","v":{"GN":[0,3,2,3,0,1,0],"YS":[0,2,0,4,0,1,1],"BD":[0,1,1,2,3,0,0],"IC":[0,0,0,1,0,0,0],"BS":[0,0,0,4,2,1,0],"GJ":[0,0,0,2,0,0,0],"DG":[0,1,2,3,0,0,0],"DJ":[0,1,0,0,0,0,0]}},{"d":"2026-02-16","wd":"월","dt":"평일","mo":2,"day":16,"wl":"2월 3주","v":{"GN":[0,4,1,1,0,0,0],"YS":[0,0,0,3,0,0,0],"BD":[0,1,0,2,0,0,0],"IC":[0,0,0,0,0,0,0],"BS":[0,0,0,1,0,0,0],"GJ":[0,0,0,0,0,0,0],"DG":[0,0,1,1,0,0,1],"DJ":[0,0,0,1,0,0,0]}},{"d":"2026-02-17","wd":"화","dt":"공휴일","mo":2,"day":17,"wl":"2월 3주","v":{"GN":[0,0,1,1,0,0,0],"YS":[0,0,3,0,0,0,0],"BD":[0,0,0,0,0,0,0],"IC":[0,1,2,1,0,0,0],"BS":[0,0,1,0,0,0,0],"GJ":[0,0,0,0,0,0,0],"DG":[0,0,0,0,0,0,0],"DJ":[0,0,0,0,0,0,0]}},{"d":"2026-02-18","wd":"수","dt":"평일","mo":2,"day":18,"wl":"2월 3주","v":{"GN":[0,3,2,3,2,1,0],"YS":[0,1,0,2,0,0,0],"BD":[0,7,3,6,0,0,0],"IC":[0,1,0,0,0,0,0],"BS":[0,3,1,3,0,0,0],"GJ":[0,0,1,1,0,0,0],"DG":[0,2,0,2,0,2,0],"DJ":[0,1,1,1,0,0,0]}},{"d":"2026-02-19","wd":"목","dt":"평일","mo":2,"day":19,"wl":"2월 3주","v":{"GN":[0,2,2,7,1,0,1],"YS":[0,4,1,3,0,0,1],"BD":[0,2,3,5,0,0,0],"IC":[0,2,2,1,0,0,0],"BS":[0,2,5,2,1,1,2],"GJ":[0,1,1,1,0,0,0],"DG":[0,2,0,0,1,0,0],"DJ":[0,2,2,1,0,0,0]}},{"d":"2026-02-20","wd":"금","dt":"평일","mo":2,"day":20,"wl":"2월 3주","v":{"GN":[0,4,10,5,3,2,0],"YS":[0,4,6,8,0,1,0],"BD":[0,1,4,3,0,1,0],"IC":[0,3,2,1,0,2,1],"BS":[0,1,1,1,1,0,0],"GJ":[0,1,1,1,0,0,2],"DG":[0,2,0,0,2,0,0],"DJ":[0,2,1,1,1,0,0]}},{"d":"2026-02-21","wd":"토","dt":"주말","mo":2,"day":21,"wl":"2월 3주","v":{"GN":[0,5,6,10,1,1,0],"YS":[0,4,3,1,1,0,0],"BD":[0,3,1,2,0,1,0],"IC":[0,1,0,0,0,0,0],"BS":[0,1,1,5,1,0,0],"GJ":[0,1,0,1,0,1,0],"DG":[0,1,2,0,1,0,0],"DJ":[0,2,0,2,0,0,0]}},{"d":"2026-02-22","wd":"일","dt":"주말","mo":2,"day":22,"wl":"2월 4주","v":{"GN":[0,7,5,3,2,0,0],"YS":[0,2,1,2,0,0,0],"BD":[0,0,2,1,1,0,0],"IC":[0,1,1,1,0,0,0],"BS":[0,1,0,4,0,1,0],"GJ":[0,2,0,1,0,0,0],"DG":[0,1,1,4,0,0,0],"DJ":[0,1,1,1,0,0,0]}},{"d":"2026-02-23","wd":"월","dt":"평일","mo":2,"day":23,"wl":"2월 4주","v":{"GN":[1,5,1,6,0,0,0],"YS":[0,11,1,6,1,1,1],"BD":[0,2,2,3,1,2,1],"IC":[0,2,1,1,0,0,0],"BS":[0,0,1,1,0,0,1],"GJ":[0,2,0,5,0,0,0],"DG":[1,2,2,0,0,0,0],"DJ":[0,1,0,0,0,0,0]}},{"d":"2026-02-24","wd":"화","dt":"평일","mo":2,"day":24,"wl":"2월 4주","v":{"GN":[0,5,1,4,0,4,0],"YS":[0,3,2,2,1,0,0],"BD":[0,2,7,1,1,0,0],"IC":[1,1,1,2,0,0,0],"BS":[0,0,0,3,0,0,0],"GJ":[0,1,1,1,0,0,1],"DG":[0,2,2,6,0,0,0],"DJ":[0,1,1,0,0,0,0]}},{"d":"2026-02-25","wd":"수","dt":"평일","mo":2,"day":25,"wl":"2월 4주","v":{"GN":[0,2,1,4,1,0,1],"YS":[0,4,3,5,0,1,2],"BD":[0,2,3,1,0,1,1],"IC":[0,1,0,1,0,1,0],"BS":[1,0,1,0,0,0,0],"GJ":[1,2,0,2,0,0,0],"DG":[0,1,2,4,0,0,0],"DJ":[0,0,2,1,1,0,0]}},{"d":"2026-02-26","wd":"목","dt":"평일","mo":2,"day":26,"wl":"2월 4주","v":{"GN":[0,7,3,9,1,3,0],"YS":[0,1,6,4,0,1,0],"BD":[0,3,3,5,0,1,0],"IC":[0,2,0,0,0,0,1],"BS":[0,1,0,0,0,0,0],"GJ":[0,0,0,0,0,0,0],"DG":[0,2,2,3,0,0,0],"DJ":[0,0,1,1,0,0,0]}},{"d":"2026-02-27","wd":"금","dt":"평일","mo":2,"day":27,"wl":"2월 4주","v":{"GN":[0,8,2,8,0,2,0],"YS":[0,1,3,2,0,0,0],"BD":[0,4,3,2,0,0,0],"IC":[0,1,0,0,0,0,0],"BS":[0,1,1,2,0,0,0],"GJ":[0,0,0,0,0,0,0],"DG":[0,2,1,3,1,0,0],"DJ":[0,0,0,0,0,1,0]}},{"d":"2026-02-28","wd":"토","dt":"주말","mo":2,"day":28,"wl":"2월 4주","v":{"GN":[0,1,2,4,1,2,0],"YS":[0,4,5,7,1,1,0],"BD":[0,7,3,5,0,0,0],"IC":[0,2,3,2,1,0,0],"BS":[0,2,1,2,0,0,0],"GJ":[0,1,0,0,0,0,0],"DG":[0,3,1,4,1,1,0],"DJ":[0,2,1,0,0,0,0]}},{"d":"2026-03-01","wd":"일","dt":"공휴일+주말","mo":3,"day":1,"wl":"3월 1주","v":{"GN":[0,2,3,4,0,0,0],"YS":[0,0,1,5,1,0,0],"BD":[0,5,1,6,1,1,0],"IC":[0,3,0,1,0,0,0],"BS":[0,4,1,1,1,0,0],"GJ":[0,0,1,1,0,0,0],"DG":[0,1,1,0,0,0,0],"DJ":[0,4,1,1,1,1,0]}},{"d":"2026-03-02","wd":"월","dt":"공휴일","mo":3,"day":2,"wl":"3월 1주","v":{"GN":[0,2,1,4,0,1,0],"YS":[0,2,1,4,0,0,0],"BD":[0,0,1,7,1,0,0],"IC":[0,0,2,2,0,0,0],"BS":[0,1,2,2,1,1,0],"GJ":[0,2,0,4,0,0,0],"DG":[0,4,0,5,1,0,0],"DJ":[0,0,0,0,0,0,0]}},{"d":"2026-03-03","wd":"화","dt":"평일","mo":3,"day":3,"wl":"3월 1주","v":{"GN":[0,2,1,6,1,0,1],"YS":[0,2,3,1,1,1,0],"BD":[0,3,1,5,0,2,1],"IC":[0,0,1,0,0,0,1],"BS":[0,1,3,6,1,0,0],"GJ":[0,3,1,2,1,1,1],"DG":[0,2,1,1,0,1,0],"DJ":[0,2,2,4,1,0,0]}},{"d":"2026-03-04","wd":"수","dt":"평일","mo":3,"day":4,"wl":"3월 1주","v":{"GN":[0,1,4,3,1,0,0],"YS":[0,2,5,7,2,0,0],"BD":[0,3,1,1,0,0,1],"IC":[0,0,2,1,0,1,0],"BS":[0,3,1,2,0,1,0],"GJ":[0,2,1,0,0,0,0],"DG":[0,1,2,3,3,1,0],"DJ":[0,0,2,0,0,0,0]}},{"d":"2026-03-05","wd":"목","dt":"평일","mo":3,"day":5,"wl":"3월 1주","v":{"GN":[0,6,2,4,2,0,1],"YS":[0,1,4,2,0,2,1],"BD":[0,1,4,1,0,0,0],"IC":[0,1,0,0,0,0,1],"BS":[0,0,1,0,1,1,0],"GJ":[0,1,0,2,0,0,0],"DG":[0,3,3,1,0,0,0],"DJ":[0,0,2,1,1,1,0]}},{"d":"2026-03-06","wd":"금","dt":"평일","mo":3,"day":6,"wl":"3월 1주","v":{"GN":[0,6,4,4,1,1,0],"YS":[0,0,4,4,1,1,0],"BD":[0,3,3,3,0,0,0],"IC":[0,2,1,1,0,0,0],"BS":[0,6,4,1,3,0,0],"GJ":[0,1,0,0,0,0,0],"DG":[0,0,2,2,0,0,0],"DJ":[0,0,1,1,0,1,0]}},{"d":"2026-03-07","wd":"토","dt":"주말","mo":3,"day":7,"wl":"3월 1주","v":{"GN":[1,7,2,7,0,1,0],"YS":[0,3,2,3,0,0,0],"BD":[0,1,3,8,1,0,0],"IC":[0,1,1,2,0,0,1],"BS":[0,2,2,2,2,0,0],"GJ":[0,1,0,0,1,0,0],"DG":[0,2,1,3,0,0,0],"DJ":[0,0,1,3,0,0,0]}},{"d":"2026-03-08","wd":"일","dt":"주말","mo":3,"day":8,"wl":"3월 2주","v":{"GN":[0,5,4,9,2,1,0],"YS":[0,2,2,4,0,0,1],"BD":[0,4,1,0,2,0,0],"IC":[0,0,1,4,0,0,0],"BS":[0,2,0,0,0,0,0],"GJ":[0,2,0,2,0,0,0],"DG":[0,0,0,2,1,0,0],"DJ":[0,3,0,0,0,0,0]}},{"d":"2026-03-09","wd":"월","dt":"평일","mo":3,"day":9,"wl":"3월 2주","v":{"GN":[0,7,1,5,3,2,6],"YS":[0,3,0,2,0,1,0],"BD":[0,4,3,2,0,0,1],"IC":[0,1,0,1,0,0,0],"BS":[0,2,2,6,1,0,0],"GJ":[0,1,0,3,0,0,0],"DG":[0,2,2,1,0,1,0],"DJ":[0,1,0,3,0,0,0]}},{"d":"2026-03-10","wd":"화","dt":"평일","mo":3,"day":10,"wl":"3월 2주","v":{"GN":[2,5,2,2,0,2,2],"YS":[0,3,2,5,0,2,0],"BD":[0,1,2,2,0,2,0],"IC":[0,2,3,1,1,0,1],"BS":[1,1,2,0,1,0,0],"GJ":[0,1,1,0,0,0,1],"DG":[0,2,3,1,0,0,0],"DJ":[0,0,0,1,0,1,0]}},{"d":"2026-03-11","wd":"수","dt":"평일","mo":3,"day":11,"wl":"3월 2주","v":{"GN":[0,2,2,2,0,0,1],"YS":[0,2,1,6,0,1,0],"BD":[0,4,1,4,1,0,0],"IC":[0,0,1,2,0,0,0],"BS":[0,1,0,2,0,0,0],"GJ":[1,1,0,2,1,0,0],"DG":[0,2,1,5,1,0,1],"DJ":[0,0,0,0,0,0,0]}},{"d":"2026-03-12","wd":"목","dt":"평일","mo":3,"day":12,"wl":"3월 2주","v":{"GN":[0,4,5,5,2,2,0],"YS":[0,7,2,4,0,0,0],"BD":[0,1,1,2,0,0,1],"IC":[0,2,0,1,0,0,0],"BS":[0,2,2,0,0,0,0],"GJ":[0,2,2,0,0,0,0],"DG":[0,0,2,1,0,0,0],"DJ":[0,1,1,1,0,0,1]}},{"d":"2026-03-13","wd":"금","dt":"평일","mo":3,"day":13,"wl":"3월 2주","v":{"GN":[0,9,3,5,1,0,0],"YS":[0,1,2,3,0,0,0],"BD":[0,4,1,1,1,0,0],"IC":[0,2,1,1,1,1,1],"BS":[0,1,0,1,0,0,2],"GJ":[0,0,0,0,0,0,0],"DG":[0,3,1,0,0,0,0],"DJ":[0,0,0,1,1,0,0]}},{"d":"2026-03-14","wd":"토","dt":"주말","mo":3,"day":14,"wl":"3월 2주","v":{"GN":[0,9,2,7,7,1,0],"YS":[0,3,0,4,1,0,0],"BD":[0,3,2,2,2,0,0],"IC":[0,0,0,1,1,0,0],"BS":[0,1,1,2,1,0,0],"GJ":[0,0,0,4,0,0,0],"DG":[0,1,3,5,0,0,0],"DJ":[0,1,1,1,0,0,0]}},{"d":"2026-03-15","wd":"일","dt":"주말","mo":3,"day":15,"wl":"3월 3주","v":{"GN":[0,3,9,5,0,1,0],"YS":[0,6,1,2,1,0,0],"BD":[0,0,1,7,0,0,0],"IC":[0,2,1,2,0,0,0],"BS":[0,3,0,1,0,0,0],"GJ":[0,2,1,1,0,0,0],"DG":[0,3,0,1,0,0,0],"DJ":[0,0,2,1,0,1,0]}},{"d":"2026-03-16","wd":"월","dt":"평일","mo":3,"day":16,"wl":"3월 3주","v":{"GN":[3,2,1,2,0,0,2],"YS":[0,4,0,2,2,0,1],"BD":[0,2,2,3,1,0,0],"IC":[0,0,0,1,0,0,0],"BS":[0,1,1,1,1,0,0],"GJ":[0,2,0,2,0,0,1],"DG":[0,0,0,2,2,0,0],"DJ":[0,3,1,0,0,0,0]}},{"d":"2026-03-17","wd":"화","dt":"평일","mo":3,"day":17,"wl":"3월 3주","v":{"GN":[0,7,4,2,0,1,0],"YS":[0,9,3,6,0,0,1],"BD":[0,3,2,0,0,0,1],"IC":[0,0,1,1,0,0,0],"BS":[0,1,0,2,0,0,3],"GJ":[0,0,0,2,0,0,0],"DG":[0,2,0,3,1,0,0],"DJ":[1,1,1,1,1,0,0]}},{"d":"2026-03-18","wd":"수","dt":"평일","mo":3,"day":18,"wl":"3월 3주","v":{"GN":[0,5,2,3,1,0,0],"YS":[0,3,3,0,1,1,2],"BD":[0,4,0,3,0,0,0],"IC":[0,1,0,1,0,2,1],"BS":[0,3,2,1,0,0,0],"GJ":[0,2,0,0,0,0,0],"DG":[1,0,1,0,0,1,0],"DJ":[0,1,1,1,0,0,0]}},{"d":"2026-03-19","wd":"목","dt":"평일","mo":3,"day":19,"wl":"3월 3주","v":{"GN":[0,3,3,5,0,2,2],"YS":[0,0,2,2,1,1,0],"BD":[0,0,1,0,0,4,0],"IC":[0,2,0,1,1,1,0],"BS":[0,1,1,1,0,1,0],"GJ":[0,0,0,1,0,0,0],"DG":[0,1,1,1,0,0,0],"DJ":[0,0,1,0,1,0,1]}},{"d":"2026-03-20","wd":"금","dt":"평일","mo":3,"day":20,"wl":"3월 3주","v":{"GN":[0,1,6,4,0,1,1],"YS":[0,2,3,4,2,1,0],"BD":[0,3,3,1,0,2,0],"IC":[0,0,0,0,1,0,0],"BS":[0,3,1,3,0,0,0],"GJ":[0,2,0,0,0,0,0],"DG":[0,1,2,3,2,1,0],"DJ":[0,0,1,2,0,0,0]}},{"d":"2026-03-21","wd":"토","dt":"주말","mo":3,"day":21,"wl":"3월 3주","v":{"GN":[0,4,5,7,5,0,1],"YS":[0,3,2,4,0,0,0],"BD":[0,2,1,1,3,0,0],"IC":[0,2,0,0,1,0,1],"BS":[0,2,2,3,0,0,0],"GJ":[0,1,1,0,1,0,0],"DG":[0,4,0,3,1,1,0],"DJ":[0,0,2,5,0,0,0]}},{"d":"2026-03-22","wd":"일","dt":"주말","mo":3,"day":22,"wl":"3월 4주","v":{"GN":[0,3,4,7,0,0,0],"YS":[0,3,1,2,2,1,0],"BD":[0,3,0,3,0,0,0],"IC":[0,0,1,0,0,0,0],"BS":[0,1,1,2,0,0,0],"GJ":[0,2,0,1,0,0,0],"DG":[0,3,1,0,1,0,0],"DJ":[0,1,1,1,0,0,0]}},{"d":"2026-03-23","wd":"월","dt":"평일","mo":3,"day":23,"wl":"3월 4주","v":{"GN":[0,4,8,3,1,4,1],"YS":[0,4,4,1,1,1,0],"BD":[0,1,1,2,0,2,0],"IC":[0,0,0,0,0,0,0],"BS":[0,5,0,3,0,0,2],"GJ":[0,2,2,1,0,0,0],"DG":[0,2,2,1,0,0,0],"DJ":[0,1,0,1,0,0,0]}},{"d":"2026-03-24","wd":"화","dt":"평일","mo":3,"day":24,"wl":"3월 4주","v":{"GN":[0,3,2,4,1,0,0],"YS":[1,3,0,2,1,0,0],"BD":[0,1,2,2,0,1,0],"IC":[0,2,1,0,0,0,0],"BS":[0,0,1,1,0,1,0],"GJ":[1,3,1,0,1,0,0],"DG":[0,2,1,1,0,0,0],"DJ":[0,0,0,1,0,0,0]}},{"d":"2026-03-25","wd":"수","dt":"평일","mo":3,"day":25,"wl":"3월 4주","v":{"GN":[0,4,3,3,0,1,1],"YS":[0,1,0,1,1,1,0],"BD":[0,2,1,3,0,0,2],"IC":[0,1,2,0,0,0,0],"BS":[0,4,3,2,0,0,0],"GJ":[0,0,0,1,0,0,0],"DG":[0,1,0,2,0,0,0],"DJ":[0,0,0,0,0,0,0]}},{"d":"2026-03-26","wd":"목","dt":"평일","mo":3,"day":26,"wl":"3월 4주","v":{"GN":[1,3,1,2,0,1,0],"YS":[0,0,0,1,1,0,0],"BD":[0,0,1,1,0,1,2],"IC":[0,1,1,1,0,1,0],"BS":[0,0,3,2,0,0,0],"GJ":[0,0,1,2,0,0,0],"DG":[0,1,0,1,0,0,0],"DJ":[0,0,2,0,0,0,0]}},{"d":"2026-03-27","wd":"금","dt":"평일","mo":3,"day":27,"wl":"3월 4주","v":{"GN":[0,1,5,4,0,0,1],"YS":[0,4,1,7,1,1,0],"BD":[0,4,2,1,2,0,3],"IC":[0,2,0,2,0,1,1],"BS":[0,3,5,2,0,0,0],"GJ":[0,3,1,0,0,0,0],"DG":[0,1,1,0,0,1,0],"DJ":[0,0,1,1,0,1,0]}},{"d":"2026-03-28","wd":"토","dt":"주말","mo":3,"day":28,"wl":"3월 4주","v":{"GN":[0,4,9,9,1,0,0],"YS":[0,3,1,1,1,0,0],"BD":[0,0,0,1,0,0,0],"IC":[0,1,1,0,0,0,0],"BS":[0,2,0,1,1,0,0],"GJ":[0,1,0,2,0,0,0],"DG":[0,3,1,1,0,0,0],"DJ":[0,1,0,1,0,0,0]}},{"d":"2026-03-29","wd":"일","dt":"주말","mo":3,"day":29,"wl":"3월 5주","v":{"GN":[1,10,2,6,0,0,0],"YS":[0,2,1,6,1,0,0],"BD":[0,1,1,2,1,0,0],"IC":[0,3,2,0,0,0,0],"BS":[0,0,0,3,0,0,0],"GJ":[0,2,3,3,0,0,0],"DG":[0,3,1,1,1,0,0],"DJ":[0,4,0,3,1,0,0]}},{"d":"2026-03-30","wd":"월","dt":"평일","mo":3,"day":30,"wl":"3월 5주","v":{"GN":[0,6,3,2,2,2,1],"YS":[0,1,1,3,2,2,1],"BD":[0,3,2,2,0,0,0],"IC":[0,3,0,5,1,0,0],"BS":[0,1,1,2,0,1,0],"GJ":[0,4,2,3,0,0,0],"DG":[0,4,0,1,0,1,0],"DJ":[0,2,0,2,0,0,0]}},{"d":"2026-03-31","wd":"화","dt":"평일","mo":3,"day":31,"wl":"3월 5주","v":{"GN":[0,2,4,3,0,2,0],"YS":[1,3,2,0,0,2,0],"BD":[0,3,1,3,0,0,0],"IC":[0,1,2,1,0,1,0],"BS":[0,3,0,1,1,1,1],"GJ":[0,1,0,0,0,0,0],"DG":[1,0,3,2,0,0,0],"DJ":[0,1,0,0,0,0,1]}},{"d":"2026-04-01","wd":"수","dt":"평일","mo":4,"day":1,"wl":"4월 1주","v":{"GN":[1,9,3,5,0,1,1],"YS":[0,0,1,2,1,0,1],"BD":[0,2,1,0,3,3,2],"IC":[0,3,1,3,0,0,1],"BS":[0,2,0,1,0,0,2],"GJ":[0,1,1,0,0,0,2],"DG":[0,3,3,4,0,1,1],"DJ":[0,2,1,1,0,0,0]}},{"d":"2026-04-02","wd":"목","dt":"평일","mo":4,"day":2,"wl":"4월 1주","v":{"GN":[0,4,3,5,0,1,0],"YS":[0,0,4,2,1,0,1],"BD":[0,2,0,3,0,1,0],"IC":[0,2,0,1,0,2,0],"BS":[0,3,1,3,0,0,1],"GJ":[0,1,0,0,0,1,0],"DG":[0,1,2,0,0,0,0],"DJ":[0,0,0,0,0,0,0]}},{"d":"2026-04-03","wd":"금","dt":"평일","mo":4,"day":3,"wl":"4월 1주","v":{"GN":[0,8,2,3,0,0,0],"YS":[0,1,0,2,1,0,1],"BD":[0,5,4,3,0,1,0],"IC":[0,0,0,2,0,0,0],"BS":[0,4,0,0,1,0,0],"GJ":[1,0,0,0,1,0,1],"DG":[0,2,0,1,1,0,0],"DJ":[0,1,0,0,1,0,0]}},{"d":"2026-04-04","wd":"토","dt":"주말","mo":4,"day":4,"wl":"4월 1주","v":{"GN":[0,5,4,7,1,0,1],"YS":[0,1,1,3,0,0,0],"BD":[0,3,1,3,1,1,0],"IC":[0,1,0,2,0,0,1],"BS":[0,1,1,1,2,0,0],"GJ":[0,3,0,1,0,0,0],"DG":[0,2,2,1,0,0,0],"DJ":[0,2,1,0,2,0,0]}},{"d":"2026-04-05","wd":"일","dt":"주말","mo":4,"day":5,"wl":"4월 1주","v":{"GN":[0,5,2,4,1,1,0],"YS":[0,2,0,2,1,0,0],"BD":[0,5,1,1,1,0,0],"IC":[0,0,0,3,0,0,0],"BS":[0,5,2,2,1,0,0],"GJ":[0,2,2,3,0,0,0],"DG":[0,2,3,1,1,0,0],"DJ":[0,0,0,1,0,0,0]}},{"d":"2026-04-06","wd":"월","dt":"평일","mo":4,"day":6,"wl":"4월 1주","v":{"GN":[0,4,7,5,1,4,0],"YS":[0,6,0,4,0,0,1],"BD":[0,3,1,4,2,0,0],"IC":[0,0,0,1,1,1,0],"BS":[1,3,2,2,0,1,0],"GJ":[0,0,0,0,0,1,1],"DG":[0,2,0,0,1,0,0],"DJ":[0,3,0,0,0,0,0]}},{"d":"2026-04-07","wd":"화","dt":"평일","mo":4,"day":7,"wl":"4월 1주","v":{"GN":[0,3,3,3,0,1,3],"YS":[0,5,1,5,1,0,0],"BD":[0,0,2,5,0,0,0],"IC":[0,1,2,0,0,0,0],"BS":[0,3,0,3,0,0,0],"GJ":[0,1,1,0,0,2,1],"DG":[0,0,3,1,0,0,0],"DJ":[0,1,2,0,0,0,2]}},{"d":"2026-04-08","wd":"수","dt":"평일","mo":4,"day":8,"wl":"4월 2주","v":{"GN":[0,3,3,1,1,2,1],"YS":[0,3,2,3,0,0,0],"BD":[0,5,1,3,0,1,0],"IC":[0,1,3,0,0,0,0],"BS":[0,1,0,1,0,0,0],"GJ":[0,0,0,2,0,2,0],"DG":[0,1,0,2,0,0,0],"DJ":[0,0,2,0,0,0,0]}},{"d":"2026-04-09","wd":"목","dt":"평일","mo":4,"day":9,"wl":"4월 2주","v":{"GN":[1,5,3,0,0,1,0],"YS":[0,2,1,2,2,1,1],"BD":[0,1,5,1,2,0,0],"IC":[0,2,0,0,0,0,1],"BS":[0,0,0,1,0,1,0],"GJ":[0,1,0,0,0,0,0],"DG":[0,1,0,2,2,0,0],"DJ":[0,0,0,1,0,0,0]}},{"d":"2026-04-10","wd":"금","dt":"평일","mo":4,"day":10,"wl":"4월 2주","v":{"GN":[0,6,4,2,2,0,0],"YS":[0,6,1,0,0,0,0],"BD":[0,1,2,3,0,2,0],"IC":[0,0,0,1,0,0,0],"BS":[0,3,2,1,0,1,0],"GJ":[0,0,3,0,0,0,2],"DG":[0,5,1,1,0,0,0],"DJ":[0,0,0,1,1,0,0]}},{"d":"2026-04-11","wd":"토","dt":"주말","mo":4,"day":11,"wl":"4월 2주","v":{"GN":[0,6,0,6,2,0,0],"YS":[0,1,0,4,0,0,0],"BD":[0,1,0,4,1,0,0],"IC":[0,1,0,1,0,0,0],"BS":[0,4,1,2,0,0,0],"GJ":[0,1,0,2,1,0,0],"DG":[0,2,2,2,1,0,1],"DJ":[0,1,1,0,0,0,0]}},{"d":"2026-04-12","wd":"일","dt":"주말","mo":4,"day":12,"wl":"4월 2주","v":{"GN":[0,3,1,7,2,0,0],"YS":[0,0,1,2,0,0,0],"BD":[0,4,1,2,1,0,0],"IC":[0,1,1,1,0,0,0],"BS":[0,1,2,2,1,0,0],"GJ":[0,0,0,0,0,0,0],"DG":[0,2,0,1,1,0,0],"DJ":[0,3,1,3,0,0,0]}},{"d":"2026-04-13","wd":"월","dt":"평일","mo":4,"day":13,"wl":"4월 2주","v":{"GN":[0,6,2,5,0,3,2],"YS":[1,3,1,3,1,0,0],"BD":[0,2,2,2,1,0,1],"IC":[0,3,0,1,0,0,0],"BS":[0,3,3,3,1,1,0],"GJ":[0,2,1,1,0,0,0],"DG":[0,0,1,4,0,0,1],"DJ":[0,0,1,1,0,0,0]}},{"d":"2026-04-14","wd":"화","dt":"평일","mo":4,"day":14,"wl":"4월 2주","v":{"GN":[0,2,2,5,2,5,0],"YS":[0,2,4,4,1,0,1],"BD":[0,2,2,0,0,2,0],"IC":[0,4,1,2,0,1,0],"BS":[1,1,5,1,2,0,0],"GJ":[0,0,0,1,0,0,0],"DG":[0,1,0,1,2,0,0],"DJ":[0,1,1,0,1,0,0]}},{"d":"2026-04-15","wd":"수","dt":"평일","mo":4,"day":15,"wl":"4월 3주","v":{"GN":[0,1,2,4,3,2,0],"YS":[0,6,2,0,1,1,0],"BD":[0,3,2,2,0,1,0],"IC":[0,0,0,0,0,0,0],"BS":[0,1,3,1,0,0,1],"GJ":[0,0,1,0,0,0,0],"DG":[0,2,0,1,1,0,0],"DJ":[0,1,0,0,0,1,0]}},{"d":"2026-04-16","wd":"목","dt":"평일","mo":4,"day":16,"wl":"4월 3주","v":{"GN":[0,2,5,3,0,5,0],"YS":[0,0,1,1,0,1,0],"BD":[0,1,0,0,1,1,0],"IC":[0,1,0,0,0,0,0],"BS":[0,1,1,0,0,0,0],"GJ":[0,1,1,1,0,0,0],"DG":[0,1,1,3,1,1,0],"DJ":[0,1,2,1,0,0,0]}},{"d":"2026-04-17","wd":"금","dt":"평일","mo":4,"day":17,"wl":"4월 3주","v":{"GN":[0,3,4,5,0,1,3],"YS":[0,0,1,2,1,0,0],"BD":[0,1,3,2,1,0,0],"IC":[0,1,0,0,0,0,0],"BS":[0,4,0,2,0,0,0],"GJ":[0,2,2,0,0,0,0],"DG":[0,0,2,3,0,0,0],"DJ":[0,0,0,1,1,0,0]}},{"d":"2026-04-18","wd":"토","dt":"주말","mo":4,"day":18,"wl":"4월 3주","v":{"GN":[0,6,6,7,1,0,0],"YS":[0,5,1,3,0,0,0],"BD":[0,1,1,4,0,0,0],"IC":[0,1,1,2,0,0,0],"BS":[0,4,1,2,0,0,0],"GJ":[0,0,0,1,0,0,0],"DG":[0,3,1,0,0,0,0],"DJ":[0,0,0,0,1,0,0]}},{"d":"2026-04-19","wd":"일","dt":"주말","mo":4,"day":19,"wl":"4월 3주","v":{"GN":[0,6,3,10,0,0,0],"YS":[0,0,2,4,0,0,0],"BD":[0,2,0,3,0,0,0],"IC":[0,1,1,1,0,0,0],"BS":[0,2,1,1,0,0,0],"GJ":[0,1,0,2,0,0,0],"DG":[0,1,4,7,0,0,0],"DJ":[0,1,0,1,1,0,0]}},{"d":"2026-04-20","wd":"월","dt":"평일","mo":4,"day":20,"wl":"4월 3주","v":{"GN":[0,7,7,4,1,2,2],"YS":[0,3,1,1,0,0,0],"BD":[0,2,4,3,1,0,0],"IC":[0,0,1,1,0,0,0],"BS":[0,0,1,3,0,0,0],"GJ":[1,0,0,0,0,0,0],"DG":[0,3,1,3,0,0,0],"DJ":[0,0,1,0,0,1,0]}},{"d":"2026-04-21","wd":"화","dt":"평일","mo":4,"day":21,"wl":"4월 3주","v":{"GN":[0,4,3,5,1,0,0],"YS":[0,7,7,9,3,2,0],"BD":[0,1,5,2,1,0,0],"IC":[0,4,1,2,0,0,1],"BS":[0,2,0,2,0,0,0],"GJ":[0,0,0,1,0,2,0],"DG":[0,1,2,0,0,1,0],"DJ":[0,0,1,0,0,0,0]}},{"d":"2026-04-22","wd":"수","dt":"평일","mo":4,"day":22,"wl":"4월 4주","v":{"GN":[0,2,1,7,0,1,0],"YS":[1,10,9,6,4,5,0],"BD":[0,5,2,2,0,1,0],"IC":[0,2,1,0,0,0,0],"BS":[0,1,0,1,0,0,0],"GJ":[0,1,0,1,0,0,0],"DG":[0,1,1,0,2,0,0],"DJ":[0,1,2,0,0,0,0]}},{"d":"2026-04-23","wd":"목","dt":"평일","mo":4,"day":23,"wl":"4월 4주","v":{"GN":[0,2,4,6,1,1,1],"YS":[0,0,2,0,1,1,1],"BD":[0,3,0,3,0,0,0],"IC":[0,0,1,0,0,0,1],"BS":[0,0,2,2,0,1,0],"GJ":[0,1,0,2,0,0,0],"DG":[0,2,1,1,0,0,0],"DJ":[0,3,1,1,0,1,0]}},{"d":"2026-04-24","wd":"금","dt":"평일","mo":4,"day":24,"wl":"4월 4주","v":{"GN":[0,5,8,8,1,3,0],"YS":[0,3,0,2,1,1,2],"BD":[0,2,2,2,1,0,0],"IC":[0,1,0,0,1,2,0],"BS":[0,2,1,1,0,0,1],"GJ":[0,2,2,0,0,0,0],"DG":[0,2,0,1,1,0,0],"DJ":[0,1,0,1,0,1,0]}},{"d":"2026-04-25","wd":"토","dt":"주말","mo":4,"day":25,"wl":"4월 4주","v":{"GN":[0,1,7,5,1,0,1],"YS":[0,4,4,1,1,0,1],"BD":[0,2,1,1,2,0,0],"IC":[0,3,0,0,0,0,1],"BS":[0,3,2,1,0,0,0],"GJ":[0,0,0,2,0,1,0],"DG":[0,2,3,1,1,0,0],"DJ":[0,0,2,1,0,0,0]}},{"d":"2026-04-26","wd":"일","dt":"주말","mo":4,"day":26,"wl":"4월 4주","v":{"GN":[0,7,4,3,1,0,0],"YS":[0,2,3,2,1,0,0],"BD":[0,4,0,3,0,0,0],"IC":[0,0,1,5,0,0,0],"BS":[0,0,0,1,0,1,0],"GJ":[0,0,1,1,0,0,0],"DG":[0,2,1,1,1,0,0],"DJ":[0,1,0,2,0,0,0]}},{"d":"2026-04-27","wd":"월","dt":"평일","mo":4,"day":27,"wl":"4월 4주","v":{"GN":[1,9,6,6,0,2,0],"YS":[0,4,3,4,2,0,0],"BD":[0,4,1,3,0,1,0],"IC":[0,4,1,0,0,0,0],"BS":[0,5,0,2,1,1,0],"GJ":[0,1,1,0,0,0,0],"DG":[0,3,2,3,0,1,0],"DJ":[0,1,0,3,0,0,0]}},{"d":"2026-04-28","wd":"화","dt":"평일","mo":4,"day":28,"wl":"4월 4주","v":{"GN":[0,1,7,3,0,4,0],"YS":[0,4,1,1,1,0,1],"BD":[0,2,2,3,0,0,1],"IC":[0,2,0,3,0,1,0],"BS":[0,0,1,0,0,0,0],"GJ":[0,1,1,2,0,3,1],"DG":[0,0,2,3,1,0,0],"DJ":[0,1,0,0,0,0,0]}},{"d":"2026-04-29","wd":"수","dt":"평일","mo":4,"day":29,"wl":"4월 5주","v":{"GN":[0,2,3,5,0,0,1],"YS":[0,5,1,3,0,0,2],"BD":[0,2,2,2,0,1,0],"IC":[0,2,2,1,0,0,0],"BS":[0,4,2,2,0,0,0],"GJ":[0,2,1,1,0,0,0],"DG":[0,1,2,3,0,0,0],"DJ":[0,1,0,0,0,0,0]}},{"d":"2026-04-30","wd":"목","dt":"평일","mo":4,"day":30,"wl":"4월 5주","v":{"GN":[0,3,3,2,0,3,1],"YS":[0,3,2,3,1,2,1],"BD":[0,2,1,1,0,0,1],"IC":[0,1,4,0,0,0,0],"BS":[0,0,1,0,0,0,0],"GJ":[0,2,1,0,0,0,0],"DG":[0,1,1,0,0,0,0],"DJ":[0,0,1,0,1,0,0]}},{"d":"2026-05-01","wd":"금","dt":"공휴일","mo":5,"day":1,"wl":"5월 1주","v":{"GN":[0,5,9,8,2,0,0],"YS":[0,2,0,4,0,0,0],"BD":[0,4,1,3,0,0,1],"IC":[0,1,0,1,0,0,0],"BS":[0,0,2,4,0,1,1],"GJ":[0,0,1,2,1,0,0],"DG":[0,5,2,2,1,0,0],"DJ":[0,0,1,1,0,0,0]}},{"d":"2026-05-02","wd":"토","dt":"주말","mo":5,"day":2,"wl":"5월 1주","v":{"GN":[0,1,2,1,0,0,0],"YS":[0,3,2,1,0,0,0],"BD":[0,3,4,2,0,1,0],"IC":[0,1,0,0,0,0,0],"BS":[0,2,3,4,0,0,0],"GJ":[0,0,1,3,0,0,0],"DG":[0,5,1,4,0,0,0],"DJ":[0,0,0,0,0,0,0]}},{"d":"2026-05-03","wd":"일","dt":"주말","mo":5,"day":3,"wl":"5월 1주","v":{"GN":[0,4,4,5,1,0,1],"YS":[0,4,2,4,1,0,0],"BD":[0,0,0,1,1,0,0],"IC":[0,0,0,0,0,0,0],"BS":[0,1,1,1,0,0,0],"GJ":[0,3,2,2,0,0,0],"DG":[0,2,2,2,1,0,0],"DJ":[0,1,0,0,0,0,0]}},{"d":"2026-05-04","wd":"월","dt":"평일","mo":5,"day":4,"wl":"5월 1주","v":{"GN":[0,2,4,6,0,0,0],"YS":[0,3,2,1,0,0,1],"BD":[0,5,2,1,0,0,0],"IC":[0,3,1,0,0,0,0],"BS":[0,2,2,0,0,0,0],"GJ":[0,0,0,3,0,0,0],"DG":[0,7,4,2,0,0,0],"DJ":[0,1,1,1,1,0,0]}},{"d":"2026-05-05","wd":"화","dt":"공휴일","mo":5,"day":5,"wl":"5월 1주","v":{"GN":[0,6,0,6,2,0,0],"YS":[1,3,3,1,1,0,0],"BD":[0,0,1,1,1,0,0],"IC":[0,2,0,1,0,0,0],"BS":[0,3,1,1,0,0,0],"GJ":[0,1,0,2,2,0,0],"DG":[0,0,1,2,1,0,0],"DJ":[0,0,2,1,0,0,0]}},{"d":"2026-05-06","wd":"수","dt":"평일","mo":5,"day":6,"wl":"5월 1주","v":{"GN":[0,6,5,4,0,1,1],"YS":[0,1,3,1,0,1,0],"BD":[0,3,1,1,0,1,0],"IC":[0,1,0,0,0,1,0],"BS":[0,5,2,1,0,0,0],"GJ":[0,0,2,1,0,1,0],"DG":[0,5,0,2,0,2,0],"DJ":[0,1,0,0,1,0,1]}},{"d":"2026-05-07","wd":"목","dt":"평일","mo":5,"day":7,"wl":"5월 1주","v":{"GN":[0,3,2,2,0,1,0],"YS":[0,2,2,3,0,1,0],"BD":[0,5,0,5,0,1,0],"IC":[0,1,0,1,1,0,0],"BS":[1,1,0,0,0,0,0],"GJ":[0,0,2,0,1,1,0],"DG":[1,3,2,1,0,1,0],"DJ":[0,0,1,0,0,0,0]}},{"d":"2026-05-08","wd":"금","dt":"평일","mo":5,"day":8,"wl":"5월 2주","v":{"GN":[1,5,3,4,1,3,0],"YS":[0,3,0,8,0,0,0],"BD":[1,3,0,2,0,0,0],"IC":[0,1,1,0,0,0,1],"BS":[0,6,0,1,1,1,0],"GJ":[0,5,1,0,0,1,0],"DG":[0,1,1,1,1,1,0],"DJ":[0,1,0,2,0,1,0]}},{"d":"2026-05-09","wd":"토","dt":"주말","mo":5,"day":9,"wl":"5월 2주","v":{"GN":[1,5,2,3,1,0,0],"YS":[0,1,5,4,1,0,0],"BD":[0,2,1,2,1,0,0],"IC":[0,2,1,1,0,0,0],"BS":[0,0,0,1,0,0,0],"GJ":[0,1,0,0,0,0,0],"DG":[0,4,0,2,0,0,0],"DJ":[0,3,1,0,0,0,0]}},{"d":"2026-05-10","wd":"일","dt":"주말","mo":5,"day":10,"wl":"5월 2주","v":{"GN":[0,3,2,6,3,2,0],"YS":[0,5,2,7,0,0,0],"BD":[0,3,0,4,0,0,0],"IC":[0,0,0,2,0,0,0],"BS":[0,2,1,3,0,0,0],"GJ":[0,1,1,2,0,0,0],"DG":[0,5,1,1,0,0,0],"DJ":[0,0,1,3,0,0,0]}},{"d":"2026-05-11","wd":"월","dt":"평일","mo":5,"day":11,"wl":"5월 2주","v":{"GN":[0,4,5,4,1,2,1],"YS":[0,2,1,3,0,1,0],"BD":[0,4,2,1,0,1,0],"IC":[0,2,0,0,0,0,0],"BS":[0,4,3,2,0,0,1],"GJ":[0,3,0,0,0,2,0],"DG":[0,3,0,2,0,1,0],"DJ":[0,2,1,1,0,0,0]}},{"d":"2026-05-12","wd":"화","dt":"평일","mo":5,"day":12,"wl":"5월 2주","v":{"GN":[0,2,6,2,0,2,0],"YS":[0,2,4,3,1,0,0],"BD":[0,1,1,2,1,0,0],"IC":[0,1,0,1,0,1,0],"BS":[0,4,1,4,0,0,0],"GJ":[0,1,0,0,0,0,0],"DG":[0,2,0,3,0,0,0],"DJ":[0,1,0,2,0,1,0]}},{"d":"2026-05-13","wd":"수","dt":"평일","mo":5,"day":13,"wl":"5월 2주","v":{"GN":[0,3,1,4,0,2,1],"YS":[0,0,0,5,0,1,0],"BD":[0,7,0,0,0,0,0],"IC":[0,0,1,2,0,0,1],"BS":[0,1,0,0,0,0,0],"GJ":[0,0,1,3,0,0,0],"DG":[0,5,1,0,1,0,0],"DJ":[0,0,0,0,0,0,0]}},{"d":"2026-05-14","wd":"목","dt":"평일","mo":5,"day":14,"wl":"5월 2주","v":{"GN":[0,3,4,5,1,5,0],"YS":[0,5,1,3,0,2,0],"BD":[0,0,4,2,0,0,0],"IC":[0,1,2,0,0,0,0],"BS":[0,2,1,0,0,1,0],"GJ":[0,1,2,4,0,0,0],"DG":[0,1,1,2,1,0,1],"DJ":[0,1,1,0,0,0,0]}},{"d":"2026-05-15","wd":"금","dt":"평일","mo":5,"day":15,"wl":"5월 3주","v":{"GN":[1,2,1,3,0,2,0],"YS":[1,2,0,1,0,0,0],"BD":[0,4,0,1,1,0,0],"IC":[0,0,1,0,0,1,1],"BS":[0,3,3,2,1,0,0],"GJ":[0,0,0,1,0,0,0],"DG":[0,1,2,1,0,1,0],"DJ":[0,2,1,2,0,0,0]}},{"d":"2026-05-16","wd":"토","dt":"주말","mo":5,"day":16,"wl":"5월 3주","v":{"GN":[0,3,3,6,2,1,2],"YS":[0,1,3,3,0,1,0],"BD":[0,2,1,0,0,0,0],"IC":[0,2,0,1,0,0,0],"BS":[0,2,2,0,1,0,0],"GJ":[0,3,2,1,2,0,0],"DG":[0,4,0,0,0,0,0],"DJ":[0,2,1,0,0,0,0]}},{"d":"2026-05-17","wd":"일","dt":"주말","mo":5,"day":17,"wl":"5월 3주","v":{"GN":[0,3,2,4,2,1,2],"YS":[0,4,0,3,1,0,0],"BD":[0,0,1,3,0,1,0],"IC":[0,3,0,0,0,0,0],"BS":[0,1,1,1,1,0,0],"GJ":[0,0,0,0,0,0,0],"DG":[0,0,1,1,0,0,0],"DJ":[0,0,0,0,0,0,0]}},{"d":"2026-05-18","wd":"월","dt":"평일","mo":5,"day":18,"wl":"5월 3주","v":{"GN":[0,4,8,7,1,4,2],"YS":[0,5,2,8,0,3,0],"BD":[0,5,2,1,0,0,2],"IC":[0,3,2,1,0,2,0],"BS":[0,2,3,0,0,0,1],"GJ":[0,1,0,0,0,0,0],"DG":[0,2,0,1,1,0,0],"DJ":[0,0,1,1,1,0,0]}},{"d":"2026-05-19","wd":"화","dt":"평일","mo":5,"day":19,"wl":"5월 3주","v":{"GN":[0,6,4,3,0,4,0],"YS":[0,4,2,5,0,0,0],"BD":[0,1,1,6,0,2,0],"IC":[0,1,0,1,0,1,0],"BS":[0,1,0,0,0,0,0],"GJ":[1,0,3,1,1,0,0],"DG":[0,2,0,1,0,0,0],"DJ":[0,0,0,1,0,0,0]}},{"d":"2026-05-20","wd":"수","dt":"평일","mo":5,"day":20,"wl":"5월 3주","v":{"GN":[0,5,2,2,0,0,0],"YS":[0,2,1,1,1,1,0],"BD":[0,2,2,1,0,0,0],"IC":[0,0,0,1,1,0,0],"BS":[0,3,0,0,0,1,0],"GJ":[0,1,0,1,0,0,0],"DG":[0,2,0,3,0,0,0],"DJ":[0,1,0,0,0,0,0]}},{"d":"2026-05-21","wd":"목","dt":"평일","mo":5,"day":21,"wl":"5월 3주","v":{"GN":[0,4,2,3,1,3,1],"YS":[0,2,1,0,0,1,0],"BD":[0,1,2,3,1,1,0],"IC":[0,2,1,1,1,1,0],"BS":[0,0,1,5,0,0,0],"GJ":[0,0,1,1,0,0,1],"DG":[0,2,0,3,0,1,0],"DJ":[0,1,0,1,0,0,0]}},{"d":"2026-05-22","wd":"금","dt":"평일","mo":5,"day":22,"wl":"5월 4주","v":{"GN":[0,1,1,6,0,1,0],"YS":[0,1,7,1,0,0,2],"BD":[0,1,5,5,0,0,0],"IC":[0,1,0,0,0,1,1],"BS":[0,1,0,1,0,0,0],"GJ":[0,2,1,3,0,0,0],"DG":[0,1,0,3,0,0,0],"DJ":[0,1,1,0,0,0,0]}},{"d":"2026-05-23","wd":"토","dt":"주말","mo":5,"day":23,"wl":"5월 4주","v":{"GN":[0,3,5,3,0,2,0],"YS":[0,2,2,4,0,0,0],"BD":[0,2,0,2,0,0,0],"IC":[0,2,1,0,1,0,0],"BS":[0,3,3,2,1,0,0],"GJ":[0,1,0,2,0,0,0],"DG":[0,4,0,4,0,0,0],"DJ":[0,1,0,1,1,0,0]}},{"d":"2026-05-24","wd":"일","dt":"주말","mo":5,"day":24,"wl":"5월 4주","v":{"GN":[0,3,5,4,4,0,0],"YS":[0,1,1,3,0,0,0],"BD":[0,2,3,2,1,1,0],"IC":[0,1,0,1,0,0,0],"BS":[0,1,1,4,0,0,1],"GJ":[0,2,0,1,0,0,0],"DG":[0,3,0,1,0,0,1],"DJ":[0,1,1,1,0,0,0]}},{"d":"2026-05-25","wd":"월","dt":"공휴일","mo":5,"day":25,"wl":"5월 4주","v":{"GN":[0,4,3,2,2,0,0],"YS":[0,1,0,4,1,0,0],"BD":[0,0,1,5,0,0,0],"IC":[0,0,0,2,0,0,0],"BS":[0,1,1,1,0,1,0],"GJ":[0,3,0,1,0,0,0],"DG":[0,2,2,1,0,0,0],"DJ":[0,2,1,1,1,0,0]}},{"d":"2026-05-26","wd":"화","dt":"평일","mo":5,"day":26,"wl":"5월 4주","v":{"GN":[0,6,3,2,1,4,1],"YS":[0,3,4,4,0,1,0],"BD":[0,1,3,2,0,0,0],"IC":[0,4,0,2,0,0,0],"BS":[0,2,1,2,0,0,0],"GJ":[0,1,1,0,0,1,0],"DG":[0,2,2,1,0,0,0],"DJ":[0,0,1,2,0,0,0]}},{"d":"2026-05-27","wd":"수","dt":"평일","mo":5,"day":27,"wl":"5월 4주","v":{"GN":[0,2,1,4,2,3,3],"YS":[0,7,1,3,0,1,0],"BD":[0,2,1,2,2,1,0],"IC":[0,2,1,1,0,0,1],"BS":[0,2,2,1,0,1,0],"GJ":[0,1,0,1,0,0,0],"DG":[0,7,1,0,0,0,0],"DJ":[0,1,1,0,0,0,0]}},{"d":"2026-05-28","wd":"목","dt":"평일","mo":5,"day":28,"wl":"5월 4주","v":{"GN":[0,0,2,3,1,1,0],"YS":[0,3,1,2,0,0,0],"BD":[0,2,2,5,0,0,0],"IC":[0,0,0,0,0,0,0],"BS":[0,2,2,0,0,0,1],"GJ":[0,1,2,0,0,0,0],"DG":[0,3,0,1,0,1,1],"DJ":[0,0,1,0,0,0,0]}},{"d":"2026-05-29","wd":"금","dt":"평일","mo":5,"day":29,"wl":"5월 5주","v":{"GN":[0,2,5,3,1,4,1],"YS":[0,4,6,1,2,1,0],"BD":[0,0,5,0,0,0,0],"IC":[0,0,2,0,1,0,0],"BS":[1,2,1,2,0,1,0],"GJ":[0,1,2,1,0,0,0],"DG":[0,1,0,1,1,0,0],"DJ":[0,2,1,0,0,0,0]}},{"d":"2026-05-30","wd":"토","dt":"주말","mo":5,"day":30,"wl":"5월 5주","v":{"GN":[0,6,3,2,2,1,0],"YS":[0,2,2,3,1,0,0],"BD":[0,2,1,4,0,0,0],"IC":[0,0,0,1,0,0,0],"BS":[0,1,1,1,2,0,0],"GJ":[0,0,0,0,0,0,0],"DG":[0,0,0,0,0,0,0],"DJ":[0,3,2,1,0,0,0]}},{"d":"2026-05-31","wd":"일","dt":"주말","mo":5,"day":31,"wl":"5월 5주","v":{"GN":[0,7,2,5,1,0,0],"YS":[0,4,1,2,1,0,0],"BD":[0,0,1,3,0,0,0],"IC":[0,2,1,1,0,0,0],"BS":[0,1,0,1,0,0,0],"GJ":[0,0,1,0,0,0,0],"DG":[0,0,0,0,0,0,0],"DJ":[0,3,2,0,0,0,0]}},{"d":"2026-06-01","wd":"월","dt":"평일","mo":6,"day":1,"wl":"6월 1주","v":{"GN":[0,7,4,3,3,0,4],"YS":[0,2,2,4,1,1,0],"BD":[0,10,0,2,0,0,0],"IC":[0,1,0,0,0,1,0],"BS":[0,6,3,3,1,0,0],"GJ":[0,1,2,3,0,1,1],"DG":[0,4,0,4,0,0,2],"DJ":[0,1,1,2,0,0,0]}},{"d":"2026-06-02","wd":"화","dt":"평일","mo":6,"day":2,"wl":"6월 1주","v":{"GN":[0,2,3,0,2,3,1],"YS":[0,7,1,1,0,3,0],"BD":[0,2,3,2,1,0,0],"IC":[0,2,0,0,0,1,0],"BS":[0,1,2,0,0,1,0],"GJ":[0,2,0,6,0,0,0],"DG":[0,7,2,4,1,0,0],"DJ":[0,2,1,0,0,0,0]}},{"d":"2026-06-03","wd":"수","dt":"공휴일","mo":6,"day":3,"wl":"6월 1주","v":{"GN":[0,7,3,3,1,1,0],"YS":[0,1,3,5,1,1,0],"BD":[0,2,3,2,2,0,0],"IC":[0,1,0,0,0,0,0],"BS":[0,3,0,1,0,0,0],"GJ":[0,3,1,0,0,0,0],"DG":[0,5,1,2,0,0,0],"DJ":[0,2,0,3,0,0,0]}},{"d":"2026-06-04","wd":"목","dt":"평일","mo":6,"day":4,"wl":"6월 1주","v":{"GN":[0,3,2,5,0,2,1],"YS":[0,4,0,5,0,0,0],"BD":[0,2,2,2,0,1,0],"IC":[0,3,0,4,0,0,0],"BS":[0,1,2,0,0,0,0],"GJ":[0,2,0,0,0,0,0],"DG":[0,4,1,0,2,2,0],"DJ":[0,1,0,1,0,1,0]}},{"d":"2026-06-05","wd":"금","dt":"평일","mo":6,"day":5,"wl":"6월 1주","v":{"GN":[0,8,1,1,1,3,1],"YS":[0,2,2,3,1,0,0],"BD":[0,1,2,2,1,0,0],"IC":[0,0,1,2,0,0,0],"BS":[0,2,0,0,0,0,0],"GJ":[0,1,2,0,1,0,0],"DG":[0,3,2,1,0,0,0],"DJ":[0,1,0,0,0,0,0]}},{"d":"2026-06-06","wd":"토","dt":"주말","mo":6,"day":6,"wl":"6월 1주","v":{"GN":[0,5,2,4,1,1,3],"YS":[0,5,0,6,0,1,0],"BD":[0,2,1,1,0,0,0],"IC":[0,3,1,0,0,1,0],"BS":[0,3,1,1,1,0,0],"GJ":[0,1,0,1,1,0,0],"DG":[0,2,0,3,1,0,0],"DJ":[0,1,1,2,0,0,0]}},{"d":"2026-06-07","wd":"일","dt":"주말","mo":6,"day":7,"wl":"6월 1주","v":{"GN":[0,5,3,7,0,0,0],"YS":[0,1,1,1,1,0,0],"BD":[0,0,0,4,0,0,0],"IC":[0,2,2,0,0,0,1],"BS":[0,1,0,0,0,0,0],"GJ":[0,1,0,1,0,0,0],"DG":[0,2,0,0,0,0,0],"DJ":[0,1,1,0,0,0,0]}},{"d":"2026-06-08","wd":"월","dt":"평일","mo":6,"day":8,"wl":"6월 2주","v":{"GN":[0,9,5,3,0,4,0],"YS":[0,2,1,3,0,0,0],"BD":[0,5,2,4,0,0,0],"IC":[0,3,0,0,0,0,0],"BS":[0,3,1,1,1,0,0],"GJ":[0,0,0,2,0,0,1],"DG":[0,0,1,0,0,0,0],"DJ":[0,0,0,0,0,0,0]}},{"d":"2026-06-09","wd":"화","dt":"평일","mo":6,"day":9,"wl":"6월 2주","v":{"GN":[0,3,5,10,0,0,2],"YS":[0,2,0,0,1,0,1],"BD":[0,1,3,0,2,0,1],"IC":[0,5,1,0,1,0,1],"BS":[0,2,3,0,0,0,0],"GJ":[0,0,0,1,0,0,0],"DG":[0,1,0,0,0,0,0],"DJ":[0,0,1,2,1,0,0]}},{"d":"2026-06-10","wd":"수","dt":"평일","mo":6,"day":10,"wl":"6월 2주","v":{"GN":[0,1,1,2,1,2,1],"YS":[1,1,1,1,0,0,0],"BD":[0,3,0,5,1,0,0],"IC":[0,1,2,3,0,0,1],"BS":[0,0,0,1,1,0,0],"GJ":[0,1,0,2,1,2,0],"DG":[0,2,0,0,0,1,0],"DJ":[0,2,5,3,0,0,0]}},{"d":"2026-06-11","wd":"목","dt":"평일","mo":6,"day":11,"wl":"6월 2주","v":{"GN":[1,3,2,3,2,1,1],"YS":[0,1,0,1,1,2,0],"BD":[0,2,1,1,3,1,0],"IC":[0,0,1,1,0,1,0],"BS":[0,2,2,0,3,1,0],"GJ":[0,1,1,1,0,0,0],"DG":[0,3,0,3,2,0,0],"DJ":[0,0,0,0,0,0,0]}},{"d":"2026-06-12","wd":"금","dt":"평일","mo":6,"day":12,"wl":"6월 2주","v":{"GN":[0,2,3,3,1,4,0],"YS":[0,3,1,2,0,0,0],"BD":[0,5,1,2,1,1,0],"IC":[0,0,1,1,0,1,0],"BS":[0,1,2,1,0,2,0],"GJ":[0,1,0,0,0,0,0],"DG":[0,0,0,0,0,0,0],"DJ":[0,0,1,1,1,0,0]}},{"d":"2026-06-13","wd":"토","dt":"주말","mo":6,"day":13,"wl":"6월 2주","v":{"GN":[0,6,3,4,1,2,1],"YS":[0,1,1,2,1,0,1],"BD":[0,1,2,1,1,0,0],"IC":[0,0,0,1,0,0,0],"BS":[0,2,0,1,0,0,0],"GJ":[0,2,0,1,0,0,0],"DG":[0,1,2,1,0,0,0],"DJ":[0,0,0,0,0,0,0]}},{"d":"2026-06-14","wd":"일","dt":"주말","mo":6,"day":14,"wl":"6월 2주","v":{"GN":[0,8,3,10,0,0,0],"YS":[0,0,0,0,0,0,0],"BD":[0,3,0,4,0,0,0],"IC":[0,1,1,2,0,0,0],"BS":[0,0,1,0,0,0,0],"GJ":[0,0,1,3,0,0,0],"DG":[0,2,1,0,0,0,0],"DJ":[0,0,0,1,0,0,0]}},{"d":"2026-06-15","wd":"월","dt":"평일","mo":6,"day":15,"wl":"6월 3주","v":{"GN":[0,7,5,2,0,1,0],"YS":[1,2,2,8,2,2,0],"BD":[0,4,3,3,1,0,0],"IC":[0,0,0,1,0,0,1],"BS":[0,3,2,4,0,0,0],"GJ":[0,1,1,0,0,0,0],"DG":[0,2,0,2,0,1,1],"DJ":[0,0,0,2,2,0,0]}},{"d":"2026-06-16","wd":"화","dt":"평일","mo":6,"day":16,"wl":"6월 3주","v":{"GN":[0,8,1,2,2,2,0],"YS":[0,2,2,3,1,0,0],"BD":[0,2,2,2,0,0,0],"IC":[0,0,1,1,0,0,0],"BS":[0,3,0,0,0,1,0],"GJ":[0,0,1,3,0,0,0],"DG":[0,3,0,2,0,0,0],"DJ":[0,3,3,0,0,0,0]}}],"asOf":"2026-06-16"}
+</script>
+<script>
+const DATA = JSON.parse(document.getElementById('data-island').textContent);
+const dealerOrder = DATA.dealerOrder;
+const dealerKr = DATA.dealerKr;
+const modelOrder = DATA.modelOrder;
+const allocation = DATA.allocation;
+const days = DATA.days; // [{d, wd, dt, mo, day, wl, v:{dealer:[counts by model]}}]
+const GOLD='#C9A961', GOLD_SOFT='#E4D2A0', CORAL='#E2654B', NAVY600='#2A4A82', WEEKEND='#3A5B8C', HOLIDAY='#B8513B', PAPER='#F7F5F0', GREEN='#7FBF8F';
+const WD_BAR='#2A4A82', WE_BAR='#D9A441'; // 주차별 평일/주말 비교용 (캘린더 색과 별개)
+const tooltip = document.getElementById('tooltip');
+const monthNames = {1:'1월',2:'2월',3:'3월',4:'4월',5:'5월',6:'6월'};
+
+function fmt(n){ return Math.round(n).toLocaleString('en-US'); }
+function fmt1(n){ return n.toLocaleString('en-US',{minimumFractionDigits:1,maximumFractionDigits:1}); }
+function showTip(x,y,html){ tooltip.innerHTML=html; tooltip.style.left=(x+16)+'px'; tooltip.style.top=(y-10)+'px'; tooltip.style.opacity=1; }
+function hideTip(){ tooltip.style.opacity=0; }
+function svgEl(tag, attrs){ const el=document.createElementNS('http://www.w3.org/2000/svg', tag); for(const k in attrs) el.setAttribute(k, attrs[k]); return el; }
+
+/* === State === */
+let activeModel = 'ALL'; // 'ALL' or one of modelOrder
+let activeDealerMonth = 6;
+let activeCalMonth = 6;
+
+/* === Core aggregation helper ===
+   total(day, dealer) -> sum of counts for active model filter */
+function dayDealerTotal(day, dealer){
+  const arr = day.v[dealer];
+  if(activeModel==='ALL') return arr.reduce((a,b)=>a+b,0);
+  const idx = modelOrder.indexOf(activeModel);
+  return arr[idx];
+}
+function dayTotal(day){
+  return dealerOrder.reduce((s,dl)=>s+dayDealerTotal(day,dl),0);
+}
+
+/* Precompute per-day totals for current filter */
+function computeDailyTotals(){
+  return days.map(day=>({
+    day,
+    dealerVals: dealerOrder.reduce((o,dl)=>{o[dl]=dayDealerTotal(day,dl);return o;},{}),
+    total: dayTotal(day)
+  }));
+}
+
+/* Monthly aggregation */
+function computeMonthly(dailyTotals){
+  const out = [];
+  for(let m=1;m<=6;m++){
+    const rows = dailyTotals.filter(r=>r.day.mo===m);
+    const daysCount = rows.length;
+    const dealerSums = dealerOrder.reduce((o,dl)=>{o[dl]=rows.reduce((s,r)=>s+r.dealerVals[dl],0);return o;},{});
+    const total = rows.reduce((s,r)=>s+r.total,0);
+    out.push({
+      month: monthNames[m]+(m===6?'(~16일)':''),
+      monthNum: m, days: daysCount, total, total_avg: total/daysCount,
+      ...dealerSums,
+      ...dealerOrder.reduce((o,dl)=>{o[dl+'_avg']=dealerSums[dl]/daysCount;return o;},{})
+    });
+  }
+  return out;
+}
+
+/* === Weekday/Weekend grouping (Mon-start calendar weeks) ===
+   평일: 월~금 캘린더 주 단위로 묶고, 5묶음이 나오면 첫/마지막 중 더 짧은 쪽을 인접 묶음과 합쳐 4묶음으로 강제.
+   주말: 토~일 캘린더 주 단위로 묶고, 개수 제한 없음(완전월이면 보통 4~5묶음). */
+function groupWeekdaysByMonth(monthNum, dailyTotals){
+  const rows = dailyTotals.filter(r=>{
+    if(r.day.mo!==monthNum) return false;
+    const dow = new Date(r.day.d).getDay(); // 0=Sun..6=Sat
+    return dow!==0 && dow!==6; // 월~금만 (공휴일이어도 요일이 평일이면 포함)
+  });
+  if(rows.length===0) return [];
+  const groups = [];
+  let cur = [rows[0]];
+  for(let i=1;i<rows.length;i++){
+    const dow = new Date(rows[i].day.d).getDay();
+    if(dow===1){ groups.push(cur); cur=[rows[i]]; } // Monday starts new group
+    else cur.push(rows[i]);
+  }
+  groups.push(cur);
+  if(groups.length>4){
+    const firstLen = groups[0].length, lastLen = groups[groups.length-1].length;
+    if(firstLen<=lastLen){ groups[1] = groups[0].concat(groups[1]); groups.shift(); }
+    else { groups[groups.length-2] = groups[groups.length-2].concat(groups[groups.length-1]); groups.pop(); }
+  }
+  return groups;
+}
+function groupWeekendsByMonth(monthNum, dailyTotals){
+  const rows = dailyTotals.filter(r=>{
+    const dow = new Date(r.day.d).getDay();
+    return r.day.mo===monthNum && (dow===0||dow===6);
+  });
+  if(rows.length===0) return [];
+  const groups = [];
+  let cur = [rows[0]];
+  for(let i=1;i<rows.length;i++){
+    const dow = new Date(rows[i].day.d).getDay();
+    if(dow===6){ groups.push(cur); cur=[rows[i]]; } // Saturday starts new weekend group
+    else cur.push(rows[i]);
+  }
+  groups.push(cur);
+  return groups;
+}
+function summarizeGroup(g){
+  const total = g.reduce((s,r)=>s+r.total,0);
+  return { label:`${g[0].day.day}~${g[g.length-1].day.day}일`, days:g.length, total, avg: total/g.length, rows:g };
+}
+/* 전체 1~6월에 대해 평일그룹/주말그룹 시퀀스를 만들고 "n주차" 라벨을 부여 */
+function buildWeekdayWeekendSeries(dailyTotals){
+  const wdSeries = [], weSeries = [];
+  for(let m=1;m<=6;m++){
+    const wdGroups = groupWeekdaysByMonth(m, dailyTotals);
+    const weGroups = groupWeekendsByMonth(m, dailyTotals);
+    wdGroups.forEach((g,i)=>{
+      const s = summarizeGroup(g);
+      wdSeries.push({...s, month:m, weekIdx:i+1, weekLabel:`${monthNames[m]} ${i+1}주`});
+    });
+    weGroups.forEach((g,i)=>{
+      const s = summarizeGroup(g);
+      weSeries.push({...s, month:m, weekIdx:i+1, weekLabel:`${monthNames[m]} ${i+1}주`});
+    });
+  }
+  return {wdSeries, weSeries};
+}
+
+/* Allocation vs performance — dailyTotals를 받아 해당 구간의 비중을 계산 (전체기간 또는 특정월 서브셋 모두 가능) */
+function computeAllocation(dailyTotals){
+  const dealerTotal = dealerOrder.reduce((o,dl)=>{o[dl]=dailyTotals.reduce((s,r)=>s+r.dealerVals[dl],0);return o;},{});
+  const grand = dealerOrder.reduce((s,dl)=>s+dealerTotal[dl],0);
+  return dealerOrder.map(dl=>{
+    const perfPct = grand? dealerTotal[dl]/grand*100 : 0;
+    return {
+      dealer: dl, count: dealerTotal[dl],
+      allocPct: allocation[dl], perfPct,
+      gap: perfPct - allocation[dl]
+    };
+  });
+}
+function computeAllocationByMonth(dailyTotals, monthNum){
+  if(monthNum==='ALL') return computeAllocation(dailyTotals);
+  return computeAllocation(dailyTotals.filter(r=>r.day.mo===monthNum));
+}
+
+/* ============ HERO KPIs ============ */
+function renderHero(){
+  const dailyTotals = computeDailyTotals();
+  const monthly = computeMonthly(dailyTotals);
+  const totalAll = monthly.reduce((s,m)=>s+m.total,0);
+  const totalDays = monthly.reduce((s,m)=>s+m.days,0);
+  const avgPace = totalAll/totalDays;
+  const june = monthly.find(m=>m.monthNum===6), may = monthly.find(m=>m.monthNum===5);
+  const momDelta = ((june.total_avg-may.total_avg)/may.total_avg*100);
+  const items = [
+    {num: fmt(totalAll), small:'건', lbl:(activeModel==='ALL'?'총 계약건수':activeModel+' 계약건수')+' (1/1–6/16)'},
+    {num: fmt1(avgPace), small:'건/일', lbl:'전체 평균 일일 페이스'},
+    {num: fmt1(june.total_avg), small:'건/일', lbl:'6월 일평균 페이스', delta:`${momDelta>=0?'▲':'▼'} ${Math.abs(momDelta).toFixed(1)}% vs 5월`, dclass: momDelta>=0?'up':'down'},
+    {num:'8', small:'개 권역', lbl:'강남·용산·분당·인천·부산·광주·대구·대전'},
+  ];
+  document.getElementById('heroKpis').innerHTML = items.map(it=>`
+    <div class="hero-kpi"><div class="num">${it.num}<small>${it.small}</small></div><div class="lbl">${it.lbl}</div>
+    ${it.delta?`<div class="delta ${it.dclass}">${it.delta}</div>`:''}</div>`).join('');
+}
+
+/* ============ Model filter pills ============ */
+function renderModelPills(){
+  const dailyTotals = computeDailyTotals(); // current filter, just for counts display below we need ALL counts
+  // compute counts per model regardless of current filter for the pill subtitles
+  const counts = {};
+  modelOrder.forEach(m=>{counts[m]=0;});
+  let allCount = 0;
+  days.forEach(day=>{
+    dealerOrder.forEach(dl=>{
+      day.v[dl].forEach((c,i)=>{ counts[modelOrder[i]]+=c; allCount+=c; });
+    });
+  });
+  const pills = [{key:'ALL', label:'전체', cnt:allCount}, ...modelOrder.map(m=>({key:m,label:m,cnt:counts[m]}))];
+  const el = document.getElementById('modelPills');
+  el.innerHTML = pills.map(p=>`<button class="model-pill ${p.key===activeModel?'active':''}" data-model="${p.key}">${p.label}<span class="cnt">${fmt(p.cnt)}</span></button>`).join('');
+  el.querySelectorAll('.model-pill').forEach(btn=>{
+    btn.addEventListener('click',()=>{
+      activeModel = btn.dataset.model;
+      renderAll();
+    });
+  });
+}
+
+/* ============ June Forecast (방법1: 동시점 진행률 / 방법2: 요일구성) ============ */
+const dowMapJs = {0:'일',1:'월',2:'화',3:'수',4:'목',5:'금',6:'토'};
+function computeDailyTotalsForModel(targetModel){
+  // targetModel='ALL'이면 dealerOrder의 모델합, 특정 모델이면 해당 모델만
+  const idx = targetModel==='ALL' ? -1 : modelOrder.indexOf(targetModel);
+  return days.map(day=>{
+    const dealerVals = {};
+    dealerOrder.forEach(dl=>{
+      dealerVals[dl] = idx<0 ? day.v[dl].reduce((a,b)=>a+b,0) : day.v[dl][idx];
+    });
+    const total = dealerOrder.reduce((s,dl)=>s+dealerVals[dl],0);
+    return { day, dealerVals, total };
+  });
+}
+function forecastJune(dailyTotals, dealerFilter){
+  // dealerFilter: null = 전체, 또는 특정 딜러코드
+  function val(r){ return dealerFilter? r.dealerVals[dealerFilter] : r.total; }
+  // 방법1: 1~5월 "16일 누적 / 월말 누적" 평균 비율
+  const ratios = [];
+  for(let m=1;m<=5;m++){
+    const monthRows = dailyTotals.filter(r=>r.day.mo===m);
+    const cum16 = monthRows.filter(r=>r.day.day<=16).reduce((s,r)=>s+val(r),0);
+    const cumFull = monthRows.reduce((s,r)=>s+val(r),0);
+    if(cumFull>0) ratios.push(cum16/cumFull);
+  }
+  const avgRatio = ratios.length? ratios.reduce((a,b)=>a+b,0)/ratios.length : 0.5;
+  const june16 = dailyTotals.filter(r=>r.day.mo===6 && r.day.day<=16).reduce((s,r)=>s+val(r),0);
+  const pred1 = avgRatio>0 ? june16/avgRatio : june16;
+
+  // 방법2: 1~5월 요일별 평균 페이스를 6월 잔여일(17~30) 요일에 매칭
+  const dowTotals = {'일':[],'월':[],'화':[],'수':[],'목':[],'금':[],'토':[]};
+  dailyTotals.forEach(r=>{
+    if(r.day.mo>=1 && r.day.mo<=5){
+      const dow = dowMapJs[new Date(r.day.d).getDay()];
+      dowTotals[dow].push(val(r));
+    }
+  });
+  const dowAvg = {};
+  Object.keys(dowTotals).forEach(k=>{ dowAvg[k] = dowTotals[k].length? dowTotals[k].reduce((a,b)=>a+b,0)/dowTotals[k].length : 0; });
+  let remainSum = 0;
+  for(let d=17; d<=30; d++){
+    const dt = new Date(2026,5,d); // month index 5 = June
+    const dow = dowMapJs[dt.getDay()];
+    remainSum += dowAvg[dow];
+  }
+  const pred2 = june16 + remainSum;
+
+  return { june16, pred1, pred2, avgRatio, remainSum };
+}
+
+function renderForecastSection(){
+  const dailyTotals = computeDailyTotals();
+  const overall = forecastJune(dailyTotals, null);
+  const monthly = computeMonthly(dailyTotals);
+  const mayTotal = monthly.find(m=>m.monthNum===5).total;
+
+  // 상단 요약 카드
+  const cardHtml = (label, val, sub, accent)=>`
+    <div class="card" style="padding:20px 22px;">
+      <div style="font-family:var(--font-num);font-size:12px;color:${accent};letter-spacing:.05em;">${label}</div>
+      <div style="font-family:var(--font-num);font-size:30px;font-weight:600;margin-top:8px;">${fmt(val)}<span style="font-size:14px;color:var(--ink-soft);"> 건</span></div>
+      <div style="font-size:12px;color:rgba(247,245,240,0.45);margin-top:5px;">${sub}</div>
+    </div>`;
+  const vsMay1 = ((overall.pred1-mayTotal)/mayTotal*100);
+  const vsMay2 = ((overall.pred2-mayTotal)/mayTotal*100);
+  document.getElementById('forecastCards').innerHTML =
+    cardHtml('현재 누적 (6/1~16)', overall.june16, '16일간 실제 계약', GOLD_SOFT) +
+    cardHtml('방법1 · 동시점 진행률', Math.round(overall.pred1), `1~5월 평균 진행률 ${(overall.avgRatio*100).toFixed(1)}% 적용 · vs 5월 ${vsMay1>=0?'+':''}${vsMay1.toFixed(1)}%`, GREEN) +
+    cardHtml('방법2 · 요일구성 반영', Math.round(overall.pred2), `잔여14일 요일평균 합산 ${fmt(Math.round(overall.remainSum))}건 · vs 5월 ${vsMay2>=0?'+':''}${vsMay2.toFixed(1)}%`, '#7FA8D9');
+
+  // 딜러별 예측 테이블 (현재 모델 필터 반영)
+  let html = '<thead><tr><th>딜러</th><th>16일 누적</th><th>방법1 예상</th><th>방법2 예상</th><th>평균</th></tr></thead><tbody>';
+  let sum16=0, sum1=0, sum2=0;
+  dealerOrder.forEach(dl=>{
+    const f = forecastJune(dailyTotals, dl);
+    sum16+=f.june16; sum1+=f.pred1; sum2+=f.pred2;
+    html += `<tr><td class="name">${dealerKr[dl]}(${dl})</td><td>${fmt(f.june16)}</td><td>${fmt(f.pred1)}</td><td>${fmt(f.pred2)}</td><td class="hi">${fmt((f.pred1+f.pred2)/2)}</td></tr>`;
+  });
+  html += `<tr style="border-top:1.5px solid rgba(201,169,97,0.4);"><td class="name" style="color:var(--gold);">합계</td><td class="hi">${fmt(sum16)}</td><td class="hi">${fmt(sum1)}</td><td class="hi">${fmt(sum2)}</td><td class="hi">${fmt((sum1+sum2)/2)}</td></tr>`;
+  html += '</tbody>';
+  document.getElementById('forecastDealerTable').innerHTML = html;
+
+  // 모델별 예측 테이블 (모델 필터와 무관하게 항상 7개 모델 전체 분해)
+  let htmlM = '<thead><tr><th>모델</th><th>16일 누적</th><th>방법1 예상</th><th>방법2 예상</th><th>평균</th></tr></thead><tbody>';
+  let msum16=0,msum1=0,msum2=0;
+  modelOrder.forEach(md=>{
+    const dtForModel = computeDailyTotalsForModel(md);
+    const f = forecastJune(dtForModel, null);
+    msum16+=f.june16; msum1+=f.pred1; msum2+=f.pred2;
+    htmlM += `<tr><td class="name">${md}</td><td>${fmt(f.june16)}</td><td>${fmt(f.pred1)}</td><td>${fmt(f.pred2)}</td><td class="hi">${fmt((f.pred1+f.pred2)/2)}</td></tr>`;
+  });
+  htmlM += `<tr style="border-top:1.5px solid rgba(201,169,97,0.4);"><td class="name" style="color:var(--gold);">합계</td><td class="hi">${fmt(msum16)}</td><td class="hi">${fmt(msum1)}</td><td class="hi">${fmt(msum2)}</td><td class="hi">${fmt((msum1+msum2)/2)}</td></tr>`;
+  htmlM += '</tbody>';
+  document.getElementById('forecastModelTable').innerHTML = htmlM;
+
+  const modelLabel = activeModel==='ALL' ? '전체 모델' : activeModel+' 모델';
+  const avgPred = (overall.pred1+overall.pred2)/2;
+  const vsMayAvg = ((avgPred-mayTotal)/mayTotal*100);
+  document.getElementById('forecastInsight').innerHTML =
+    `${modelLabel} 기준, 두 방법의 평균 예상치는 <b>${fmt(avgPred)}건</b>으로 5월 실적(${fmt(mayTotal)}건) 대비 ${vsMayAvg>=0?'+':''}${vsMayAvg.toFixed(1)}%입니다. 방법1(동시점 진행률)과 방법2(요일구성)의 차이가 ${Math.abs(overall.pred1-overall.pred2)<30?'크지 않아 신뢰도가 높은 편':'다소 있어 추가 모니터링이 필요'}입니다. 두 방법 모두 과거 패턴의 연장선이므로, 실제 프로모션 변경이나 재고 상황 변화는 반영되지 않은 추정치입니다. 딜러별·모델별 표는 모델 필터와 무관하게 전체 분해 기준으로 제공됩니다.`;
+}
+
+function renderAll(){
+  renderModelPills();
+  renderHero();
+  renderMonthlySection();
+  renderWeeklySection();
+  renderJuneFocusSection();
+  renderForecastSection();
+  renderDealerSection();
+  renderAllocationSection();
+  renderCalendarSection();
+  renderDetailTable();
+}
+
+/* ============ 01 MONTHLY ============ */
+function renderMonthlySection(){
+  const dailyTotals = computeDailyTotals();
+  const data = computeMonthly(dailyTotals);
+  const W = 760, H = 270, padL=46, padR=20, padT=20, padB=34;
+  const innerW=W-padL-padR, innerH=H-padT-padB;
+  const maxAvg = Math.max(...data.map(d=>d.total_avg))*1.15 || 1;
+  const barW = innerW/data.length*0.5;
+
+  const svg = svgEl('svg',{viewBox:`0 0 ${W} ${H}`, width:'100%', style:'max-height:290px;display:block;'});
+  for(let i=0;i<=4;i++){
+    const y = padT+innerH-(innerH*i/4);
+    svg.appendChild(svgEl('line',{x1:padL,x2:W-padR,y1:y,y2:y,class:'grid-line'}));
+    const t = svgEl('text',{x:padL-8,y:y+3,'text-anchor':'end',class:'axis-label'});
+    t.textContent=(maxAvg*i/4).toFixed(0); svg.appendChild(t);
+  }
+  data.forEach((d,i)=>{
+    const cx = padL+innerW*(i+0.5)/data.length;
+    const barH = innerH*(d.total_avg/maxAvg);
+    const x = cx-barW/2, y = padT+innerH-barH;
+    const rect = svgEl('rect',{x,y,width:barW,height:barH,rx:5,fill:d.monthNum===6?GOLD:NAVY600,opacity:d.monthNum===6?1:0.85,style:'cursor:pointer;'});
+    rect.addEventListener('mouseenter',(e)=>{
+      rect.setAttribute('opacity',1);
+      showTip(e.clientX,e.clientY,`<div class="t-title">${d.month}</div><div class="t-row"><span>${activeModel==='ALL'?'총계약':activeModel}</span><b>${fmt(d.total)}건</b></div><div class="t-row"><span>일평균</span><b>${fmt1(d.total_avg)}건/일</b></div><div class="t-row"><span>영업일수</span><b>${d.days}일</b></div>`);
+    });
+    rect.addEventListener('mousemove',(e)=>showTip(e.clientX,e.clientY,tooltip.innerHTML));
+    rect.addEventListener('mouseleave',()=>{rect.setAttribute('opacity',d.monthNum===6?1:0.85);hideTip();});
+    svg.appendChild(rect);
+    const label = svgEl('text',{x:cx,y:y-8,'text-anchor':'middle',class:'axis-label',fill:PAPER,'font-weight':600,'font-size':'13'});
+    label.textContent = fmt1(d.total_avg); svg.appendChild(label);
+    const xlabel = svgEl('text',{x:cx,y:H-padB+18,'text-anchor':'middle',class:'axis-label'});
+    xlabel.textContent = d.month.replace('(~16일)',''); svg.appendChild(xlabel);
+  });
+  const box = document.getElementById('monthlyChart'); box.innerHTML=''; box.appendChild(svg);
+
+  const sorted = [...data].sort((a,b)=>b.total_avg-a.total_avg);
+  const maxA = sorted[0].total_avg || 1;
+  document.getElementById('monthlyAvgList').innerHTML = data.map(d=>`
+    <div class="dealer-row"><div class="dealer-name" style="min-width:36px;">${d.month.replace('(~16일)','')}</div>
+    <div class="dealer-bar-track"><div class="dealer-bar-fill" style="width:${(d.total_avg/maxA*100)}%;background:linear-gradient(90deg,${NAVY600},${GOLD});"></div></div>
+    <div class="dealer-val">${fmt1(d.total_avg)}<small> /일</small></div></div>`).join('');
+
+  const best=sorted[0], worst=sorted[sorted.length-1];
+  const modelLabel = activeModel==='ALL' ? '전체 모델' : activeModel+' 모델';
+  document.getElementById('monthlyInsight').innerHTML =
+    `${modelLabel} 기준, 일평균 페이스는 <b>${best.month.replace('(~16일)','')}</b>이 ${fmt1(best.total_avg)}건/일로 가장 높았고, <b>${worst.month.replace('(~16일)','')}</b>이 ${fmt1(worst.total_avg)}건/일로 가장 낮았습니다. 6월은 16일까지 일평균 <b>${fmt1(data.find(d=>d.monthNum===6).total_avg)}건/일</b>입니다.`;
+}
+
+/* ============ 02 WEEKLY (weekday / weekend fully separated, new grouping) ============ */
+function renderWeeklyGroupChart(containerId, series, color, label){
+  const W = 1180, H = 250, padL=46, padR=20, padT=20, padB=46;
+  const innerW=W-padL-padR, innerH=H-padT-padB;
+  const vals = series.map(d=>d.avg);
+  const maxV = Math.max(...vals)*1.15 || 1;
+  const minV = Math.min(...vals)*0.85;
+  const xStep = series.length>1 ? innerW/(series.length-1) : 0;
+
+  const svg = svgEl('svg',{viewBox:`0 0 ${W} ${H}`, width:'100%', style:'max-height:270px;display:block;'});
+  for(let i=0;i<=4;i++){
+    const y = padT+innerH-(innerH*i/4);
+    svg.appendChild(svgEl('line',{x1:padL,x2:W-padR,y1:y,y2:y,class:'grid-line'}));
+    const t = svgEl('text',{x:padL-8,y:y+3,'text-anchor':'end',class:'axis-label'});
+    t.textContent=(minV+(maxV-minV)*i/4).toFixed(0); svg.appendChild(t);
+  }
+  function xy(i,v){ return [padL+xStep*i, padT+innerH-innerH*((v-minV)/(maxV-minV))]; }
+  let path='';
+  series.forEach((d,i)=>{ const [x,y]=xy(i,d.avg); path += (i===0?'M':'L')+x+','+y+' '; });
+  svg.appendChild(svgEl('path',{d:path.trim(),fill:'none',stroke:color,'stroke-width':2.2}));
+  let areaPath = path.trim()+` L ${padL+innerW},${padT+innerH} L ${padL},${padT+innerH} Z`;
+  svg.appendChild(svgEl('path',{d:areaPath,fill:color,opacity:0.08}));
+
+  series.forEach((d,i)=>{
+    const [x,y]=xy(i,d.avg);
+    const c = svgEl('circle',{cx:x,cy:y,r:4,fill:color,stroke:'#0F1F38','stroke-width':1.3,style:'cursor:pointer;'});
+    c.addEventListener('mouseenter',(e)=>{
+      c.setAttribute('r',6);
+      showTip(e.clientX,e.clientY,`<div class="t-title">${d.weekLabel} · ${label}</div><div class="t-row"><span>기간</span><b>${d.label}</b></div><div class="t-row"><span>일평균</span><b>${fmt1(d.avg)}건</b></div><div class="t-row"><span>해당일수</span><b>${d.days}일</b></div>`);
+    });
+    c.addEventListener('mousemove',(e)=>showTip(e.clientX,e.clientY,tooltip.innerHTML));
+    c.addEventListener('mouseleave',()=>{c.setAttribute('r',4);hideTip();});
+    svg.appendChild(c);
+    const xlabel = svgEl('text',{x,y:H-padB+16,'text-anchor':'middle',class:'axis-label'});
+    xlabel.textContent = d.weekLabel.replace('월 ','/').replace('주','w');
+    xlabel.setAttribute('transform',`rotate(-35 ${x} ${H-padB+16})`);
+    svg.appendChild(xlabel);
+  });
+  const box = document.getElementById(containerId); box.innerHTML=''; box.appendChild(svg);
+}
+
+function renderWeeklySection(){
+  const dailyTotals = computeDailyTotals();
+  const {wdSeries, weSeries} = buildWeekdayWeekendSeries(dailyTotals);
+  renderWeeklyGroupChart('weeklyChartWeekday', wdSeries, WD_BAR, '평일');
+  renderWeeklyGroupChart('weeklyChartWeekend', weSeries, WE_BAR, '주말');
+
+  const wdAvgAll = wdSeries.reduce((s,d)=>s+d.avg,0)/wdSeries.length;
+  const weAvgAll = weSeries.reduce((s,d)=>s+d.avg,0)/weSeries.length;
+  const modelLabel = activeModel==='ALL' ? '전체 모델' : activeModel+' 모델';
+  document.getElementById('weeklyInsight').innerHTML =
+    `${modelLabel} 기준, 평일은 매월 4개 구간(짧은 캘린더 주는 인접 주와 병합)으로, 주말은 토~일 단위로 묶어 완전히 분리했습니다. 묶음 평균으로 보면 평일 일평균은 <b>${fmt1(wdAvgAll)}건</b>, 주말 일평균은 <b>${fmt1(weAvgAll)}건</b>입니다. ${weAvgAll>=wdAvgAll? '주말 계약 페이스가 평일보다 높은 편' : '평일 계약 페이스가 주말보다 높은 편'}이며, 두 추이선의 기울기 차이로 시기별 평일·주말 변동을 비교할 수 있습니다.`;
+}
+
+/* ============ 02b JUNE FOCUS (weekly trend within June, day-by-day) ============ */
+function renderJuneFocusSection(){
+  const dailyTotals = computeDailyTotals();
+  const juneDays = dailyTotals.filter(r=>r.day.mo===6);
+  const {wdSeries, weSeries} = buildWeekdayWeekendSeries(dailyTotals);
+  const juneWd = wdSeries.filter(d=>d.month===6);
+  const juneWe = weSeries.filter(d=>d.month===6);
+  // 6월 통합 주차 카드: 평일묶음과 주말묶음을 날짜 순으로 인터리브
+  const juneCombined = [...juneWd.map(d=>({...d,kind:'평일'})), ...juneWe.map(d=>({...d,kind:'주말'}))]
+    .sort((a,b)=> a.rows[0].day.d.localeCompare(b.rows[0].day.d));
+
+  const W=1180,H=270,padL=46,padR=20,padT=20,padB=34;
+  const innerW=W-padL-padR, innerH=H-padT-padB;
+  const maxV = Math.max(...juneDays.map(r=>r.total))*1.15 || 1;
+  const xStep = innerW/(juneDays.length-1);
+  const svg = svgEl('svg',{viewBox:`0 0 ${W} ${H}`, width:'100%', style:'max-height:290px;display:block;'});
+  for(let i=0;i<=4;i++){
+    const y=padT+innerH-(innerH*i/4);
+    svg.appendChild(svgEl('line',{x1:padL,x2:W-padR,y1:y,y2:y,class:'grid-line'}));
+    const t=svgEl('text',{x:padL-8,y:y+3,'text-anchor':'end',class:'axis-label'});
+    t.textContent=(maxV*i/4).toFixed(0); svg.appendChild(t);
+  }
+  // shade weekend-group blocks for visual separation
+  juneWe.forEach(d=>{
+    const startDay = d.rows[0].day.day, endDay = d.rows[d.rows.length-1].day.day;
+    const startI = juneDays.findIndex(r=>r.day.day===startDay);
+    const endI = juneDays.findIndex(r=>r.day.day===endDay);
+    if(startI<0||endI<0) return;
+    const x1 = padL+xStep*startI - xStep/2, x2 = padL+xStep*endI + xStep/2;
+    svg.appendChild(svgEl('rect',{x:x1,y:padT,width:x2-x1,height:innerH,fill:WE_BAR,opacity:0.07}));
+  });
+  let path='';
+  juneDays.forEach((r,i)=>{
+    const x=padL+xStep*i, y=padT+innerH-innerH*(r.total/maxV);
+    path += (i===0?'M':'L')+x+','+y+' ';
+  });
+  svg.appendChild(svgEl('path',{d:path.trim(),fill:'none',stroke:GOLD,'stroke-width':2.4}));
+  let areaPath = path.trim()+` L ${padL+innerW},${padT+innerH} L ${padL},${padT+innerH} Z`;
+  svg.appendChild(svgEl('path',{d:areaPath,fill:GOLD,opacity:0.1}));
+  juneDays.forEach((r,i)=>{
+    const x=padL+xStep*i, y=padT+innerH-innerH*(r.total/maxV);
+    let dotColor = WD_BAR;
+    if(r.day.dt==='주말') dotColor = WE_BAR;
+    if(r.day.dt.includes('공휴일')) dotColor = HOLIDAY;
+    const c = svgEl('circle',{cx:x,cy:y,r:4,fill:dotColor,stroke:'#0F1F38','stroke-width':1.3,style:'cursor:pointer;'});
+    c.addEventListener('mouseenter',(e)=>{
+      c.setAttribute('r',6);
+      showTip(e.clientX,e.clientY,`<div class="t-title">${r.day.d} (${r.day.wd}) · ${r.day.dt}</div><div class="t-row"><span>계약건수</span><b>${r.total}건</b></div>`);
+    });
+    c.addEventListener('mousemove',(e)=>showTip(e.clientX,e.clientY,tooltip.innerHTML));
+    c.addEventListener('mouseleave',()=>{c.setAttribute('r',4);hideTip();});
+    svg.appendChild(c);
+    const xlabel = svgEl('text',{x,y:H-padB+18,'text-anchor':'middle',class:'axis-label'});
+    xlabel.textContent = r.day.day;
+    svg.appendChild(xlabel);
+  });
+  const box = document.getElementById('juneFocusChart'); box.innerHTML=''; box.appendChild(svg);
+  const legend = document.createElement('div'); legend.className='model-legend'; legend.style.marginTop='12px';
+  legend.innerHTML = `<div class="model-item"><span class="model-swatch" style="background:${WD_BAR}"></span>평일</div><div class="model-item"><span class="model-swatch" style="background:${WE_BAR}"></span>주말</div><div class="model-item"><span class="model-swatch" style="background:${HOLIDAY}"></span>공휴일(지방선거일)</div>`;
+  box.appendChild(legend);
+
+  // weekly summary cards for June (평일묶음 기준 카드 + 주말묶음 별도 표기)
+  document.getElementById('juneWeekCards').innerHTML = juneWd.map((w,i)=>{
+    const correspondingWe = juneWe[i];
+    return `
+    <div class="card" style="padding:18px 20px;">
+      <div style="font-family:var(--font-num);font-size:11px;color:var(--gold);letter-spacing:.05em;">평일 ${w.weekLabel} (${w.label})</div>
+      <div style="font-family:var(--font-num);font-size:24px;font-weight:600;margin-top:6px;">${fmt1(w.avg)}<span style="font-size:13px;color:var(--ink-soft);"> 건/일</span></div>
+      <div style="font-size:11px;color:rgba(247,245,240,0.45);margin-top:4px;">평일 ${w.days}일 기준</div>
+      ${correspondingWe?`<div style="margin-top:10px;font-size:11.5px;border-top:1px solid var(--line);padding-top:8px;"><span style="color:${WE_BAR};">●</span> 인접 주말(${correspondingWe.label}) ${fmt1(correspondingWe.avg)}건/일</div>`:''}
+    </div>`;
+  }).join('');
+
+  // trend insight: compare week-over-week within June (평일 묶음 기준)
+  let trendTxt = '';
+  if(juneWd.length>=2){
+    const first = juneWd[0], last = juneWd[juneWd.length-1];
+    const chg = ((last.avg-first.avg)/first.avg*100);
+    trendTxt = `6월 평일 ${first.weekLabel}(${fmt1(first.avg)}건/일) 대비 ${last.weekLabel}(${fmt1(last.avg)}건/일)는 ${chg>=0?'+':''}${chg.toFixed(1)}% ${chg>=0?'상승':'하락'}했습니다. `;
+  }
+  const modelLabel = activeModel==='ALL' ? '전체 모델' : activeModel+' 모델';
+  document.getElementById('juneFocusInsight').innerHTML =
+    `${modelLabel} 기준, ${trendTxt}6/3(지방선거일)은 공휴일임에도 평일 수준의 계약이 발생했고, 6/15(월)에는 월간 최고치(80건)를 기록했습니다. 현재 마지막 구간은 16일(화)까지만 반영된 부분 기간으로, 추세 단정에는 주의가 필요합니다.`;
+}
+
+/* ============ 03 DEALER section ============ */
+function renderDealerSection(){
+  const dailyTotals = computeDailyTotals();
+  const monthly = computeMonthly(dailyTotals);
+
+  const tabs = document.getElementById('dealerMonthTabs');
+  tabs.innerHTML = monthly.map(m=>`<button class="toggle-btn ${m.monthNum===activeDealerMonth?'active':''}" data-m="${m.monthNum}">${m.month.replace('(~16일)','')}</button>`).join('');
+  tabs.querySelectorAll('.toggle-btn').forEach(btn=>{
+    btn.addEventListener('click',()=>{
+      activeDealerMonth = parseInt(btn.dataset.m);
+      renderDealerSection();
+    });
+  });
+
+  const m = monthly.find(x=>x.monthNum===activeDealerMonth);
+  // 고정 순서(강남→용산→분당→인천→부산→광주→대구→대전), 정렬하지 않음
+  const monthTotal = dealerOrder.reduce((s,d)=>s+m[d],0);
+  const rows = dealerOrder.map(d=>({
+    code:d, name:dealerKr[d], val:m[d], avg:m[d+'_avg'],
+    perfPct: monthTotal? m[d]/monthTotal*100 : 0,
+    allocPct: allocation[d]
+  }));
+  const maxV = Math.max(...rows.map(r=>r.val)) || 1;
+  document.getElementById('dealerCardLabel').textContent = `${m.month.replace('(~16일)','')} ${activeModel==='ALL'?'':activeModel+' '}계약건수 — 갭(%p)은 해당월 비중 기준`;
+  document.getElementById('dealerBars').innerHTML = rows.map(r=>{
+    const gap = r.perfPct - r.allocPct;
+    const gapColor = gap>=0 ? GREEN : CORAL;
+    // marker position: where allocPct-equivalent count would sit on the bar scale
+    const allocEquivCount = monthTotal * r.allocPct/100;
+    const markerPct = Math.min(100, (allocEquivCount/maxV*100));
+    return `
+    <div class="dealer-row"><span class="dealer-tag">${r.code}</span><span class="dealer-name">${r.name}</span>
+    <div class="dealer-bar-track"><div class="dealer-bar-fill" style="width:${(r.val/maxV*100)}%;background:linear-gradient(90deg,${NAVY600},${GOLD});"></div><div class="dealer-bar-marker" style="left:${markerPct}%;" title="배정비율 ${r.allocPct}%"></div></div>
+    <div class="dealer-val">${fmt(r.val)}건 <small>(${fmt1(r.avg)}/일)</small></div>
+    <div style="min-width:64px;text-align:right;font-family:var(--font-num);font-size:11.5px;color:${gapColor};font-weight:600;">${gap>=0?'+':''}${gap.toFixed(1)}%p</div>
+    </div>`;
+  }).join('');
+
+  // dealer trend multi-line (fixed order/colors)
+  const W=480,H=270,padL=38,padR=14,padT=16,padB=30;
+  const innerW=W-padL-padR, innerH=H-padT-padB;
+  const allVals = monthly.flatMap(d=>dealerOrder.map(dl=>d[dl]));
+  const maxV2 = Math.max(...allVals)*1.1 || 1;
+  const xStep = innerW/(monthly.length-1);
+  const colors=['#C9A961','#E2654B','#7FA8D9','#9FC98A','#C792EA','#E4B563','#6FB8B8','#D98C8C'];
+  const svg = svgEl('svg',{viewBox:`0 0 ${W} ${H}`, width:'100%', style:'max-height:290px;display:block;'});
+  for(let i=0;i<=3;i++){
+    const y=padT+innerH-(innerH*i/3);
+    svg.appendChild(svgEl('line',{x1:padL,x2:W-padR,y1:y,y2:y,class:'grid-line'}));
+  }
+  dealerOrder.forEach((dl,di)=>{
+    let path='';
+    monthly.forEach((d,i)=>{
+      const x=padL+xStep*i, y=padT+innerH-innerH*(d[dl]/maxV2);
+      path += (i===0?'M':'L')+x+','+y+' ';
+    });
+    svg.appendChild(svgEl('path',{d:path.trim(),fill:'none',stroke:colors[di],'stroke-width':1.8,opacity:0.85}));
+  });
+  monthly.forEach((d,i)=>{
+    const x=padL+xStep*i;
+    const t=svgEl('text',{x,y:H-padB+16,'text-anchor':'middle',class:'axis-label'});
+    t.textContent=d.month.replace('(~16일)','').replace('월','');
+    svg.appendChild(t);
+  });
+  const box = document.getElementById('dealerTrendChart'); box.innerHTML=''; box.appendChild(svg);
+  const legend=document.createElement('div'); legend.className='model-legend'; legend.style.marginTop='10px';
+  legend.innerHTML = dealerOrder.map((dl,i)=>`<div class="model-item"><span class="model-swatch" style="background:${colors[i]}"></span>${dealerKr[dl]}</div>`).join('');
+  box.appendChild(legend);
+}
+
+/* ============ 04 Allocation vs Performance (월별 + 합계 탭) ============ */
+let activeAllocMonth = 'ALL';
+function renderAllocationSection(){
+  const dailyTotals = computeDailyTotals();
+
+  const tabs = document.getElementById('allocMonthTabs');
+  const tabDefs = [{key:'ALL',label:'합계'},1,2,3,4,5,6].map(t=> typeof t==='object'? t : {key:t, label:monthNames[t]});
+  tabs.innerHTML = tabDefs.map(t=>`<button class="toggle-btn ${String(t.key)===String(activeAllocMonth)?'active':''}" data-m="${t.key}">${t.label}</button>`).join('');
+  tabs.querySelectorAll('.toggle-btn').forEach(btn=>{
+    btn.addEventListener('click',()=>{
+      activeAllocMonth = btn.dataset.m==='ALL' ? 'ALL' : parseInt(btn.dataset.m);
+      renderAllocationSection();
+    });
+  });
+
+  const data = computeAllocationByMonth(dailyTotals, activeAllocMonth);
+  const sorted = dealerOrder.map(dl=>data.find(d=>d.dealer===dl)); // 고정 순서(강남→...→대전)
+
+  const W=1180,H=360,padL=46,padR=20,padT=20,padB=46;
+  const innerW=W-padL-padR, innerH=H-padT-padB;
+  const groupW = innerW/sorted.length;
+  const barW = Math.min(groupW*0.3,30);
+  const maxPct = Math.max(...data.map(d=>Math.max(d.allocPct,d.perfPct)))*1.2 || 1;
+
+  const svg = svgEl('svg',{viewBox:`0 0 ${W} ${H}`, width:'100%', style:'max-height:380px;display:block;'});
+  for(let i=0;i<=4;i++){
+    const y=padT+innerH-(innerH*i/4);
+    svg.appendChild(svgEl('line',{x1:padL,x2:W-padR,y1:y,y2:y,class:'grid-line'}));
+    const t=svgEl('text',{x:padL-8,y:y+3,'text-anchor':'end',class:'axis-label'});
+    t.textContent=(maxPct*i/4).toFixed(0)+'%'; svg.appendChild(t);
+  }
+  sorted.forEach((d,i)=>{
+    const cx = padL+groupW*(i+0.5);
+    const hAlloc = innerH*(d.allocPct/maxPct);
+    const hPerf = innerH*(d.perfPct/maxPct);
+    const rAlloc = svgEl('rect',{x:cx-barW-2,y:padT+innerH-hAlloc,width:barW,height:hAlloc,rx:3,fill:'rgba(247,245,240,0.25)',style:'cursor:pointer;'});
+    const perfColor = d.gap>=0 ? GREEN : CORAL;
+    const rPerf = svgEl('rect',{x:cx+2,y:padT+innerH-hPerf,width:barW,height:hPerf,rx:3,fill:perfColor,style:'cursor:pointer;'});
+    [[rAlloc,'배정비율',d.allocPct],[rPerf,'실적비율',d.perfPct]].forEach(([rect,label,val])=>{
+      rect.addEventListener('mouseenter',(e)=>showTip(e.clientX,e.clientY,`<div class="t-title">${dealerKr[d.dealer]}(${d.dealer}) · ${label}</div><div class="t-row"><span>비율</span><b>${val.toFixed(1)}%</b></div><div class="t-row"><span>Gap</span><b style="color:${d.gap>=0?GREEN:CORAL}">${d.gap>=0?'+':''}${d.gap.toFixed(1)}%p</b></div>`));
+      rect.addEventListener('mousemove',(e)=>showTip(e.clientX,e.clientY,tooltip.innerHTML));
+      rect.addEventListener('mouseleave',hideTip);
+    });
+    svg.appendChild(rAlloc); svg.appendChild(rPerf);
+
+    const gapLabel = svgEl('text',{x:cx,y:padT+innerH-Math.max(hAlloc,hPerf)-8,'text-anchor':'middle','font-size':'15','font-weight':700,fill:perfColor});
+    gapLabel.textContent = (d.gap>=0?'+':'')+d.gap.toFixed(1)+'%p';
+    svg.appendChild(gapLabel);
+
+    const xlabel = svgEl('text',{x:cx,y:H-padB+20,'text-anchor':'middle',class:'axis-label',fill:PAPER,'font-size':'13'});
+    xlabel.textContent = dealerKr[d.dealer];
+    svg.appendChild(xlabel);
+    const xlabel2 = svgEl('text',{x:cx,y:H-padB+36,'text-anchor':'middle',class:'axis-label'});
+    xlabel2.textContent = `(${d.dealer})`;
+    svg.appendChild(xlabel2);
+  });
+  const box=document.getElementById('allocationChart'); box.innerHTML=''; box.appendChild(svg);
+  const legend=document.createElement('div'); legend.className='model-legend'; legend.style.marginTop='6px';
+  legend.innerHTML = `<div class="model-item"><span class="model-swatch" style="background:rgba(247,245,240,0.25)"></span>배정비율(역량 기준선)</div><div class="model-item"><span class="model-swatch" style="background:${GREEN}"></span>실적비율 ≥ 배정비율 (초과달성)</div><div class="model-item"><span class="model-swatch" style="background:${CORAL}"></span>실적비율 < 배정비율 (미달)</div>`;
+  box.appendChild(legend);
+
+  const byGap = [...data].sort((a,b)=>b.gap-a.gap);
+  const best = byGap[0], worst = byGap[byGap.length-1];
+  const modelLabel = activeModel==='ALL' ? '전체 모델' : activeModel+' 모델';
+  const periodLabel = activeAllocMonth==='ALL' ? '1~6월 누적' : monthNames[activeAllocMonth]+(activeAllocMonth===6?'(~16일)':'');
+  document.getElementById('allocationInsight').innerHTML =
+    `${modelLabel} · ${periodLabel} 기준, <b>${dealerKr[best.dealer]}</b>이 배정비율 대비 가장 큰 초과달성(${best.gap>=0?'+':''}${best.gap.toFixed(1)}%p)을 보였고, <b>${dealerKr[worst.dealer]}</b>은 배정비율 대비 ${worst.gap.toFixed(1)}%p로 가장 부진합니다. 배정비율은 매년 차량 배정 기준선이므로, 이 갭이 클수록 자사 역량 대비 실제 영업 성과의 편차가 크다는 의미입니다.`;
+}
+
+/* ============ 05 Calendar Heatmap ============ */
+function renderCalendarSection(){
+  const tabs = document.getElementById('calMonthTabs');
+  tabs.innerHTML = [1,2,3,4,5,6].map(m=>`<button class="toggle-btn ${m===activeCalMonth?'active':''}" data-m="${m}">${monthNames[m]}</button>`).join('');
+  tabs.querySelectorAll('.toggle-btn').forEach(btn=>{
+    btn.addEventListener('click',()=>{
+      activeCalMonth = parseInt(btn.dataset.m);
+      renderCalendarSection();
+    });
+  });
+
+  const dailyTotals = computeDailyTotals();
+  const allTotals = [...dailyTotals.map(d=>d.total)].sort((a,b)=>b-a);
+  const threshold = allTotals[Math.floor(allTotals.length*0.15)] || 0;
+
+  const monthRows = dailyTotals.filter(r=>r.day.mo===activeCalMonth);
+  const firstDate = new Date(monthRows[0].day.d);
+  const firstDow = firstDate.getDay();
+  const dowKr = ['일','월','화','수','목','금','토'];
+
+  let html = `<div class="cal-month-block"><div class="cal-grid">`;
+  html += dowKr.map(d=>`<div class="cal-dow">${d}</div>`).join('');
+  for(let i=0;i<firstDow;i++) html += `<div class="cal-cell empty"></div>`;
+
+  const maxVal = Math.max(...monthRows.map(r=>r.total)) || 1;
+  monthRows.forEach(r=>{
+    const dayNum = r.day.day;
+    let bg = '#1D3760';
+    if(r.day.dt==='주말') bg = WEEKEND;
+    if(r.day.dt.includes('공휴일')) bg = HOLIDAY;
+    const isHigh = r.total>=threshold && r.total>0;
+    const intensity = Math.max(0.32, r.total/maxVal);
+    const style = isHigh ? `background:${GOLD};box-shadow:0 0 0 1.5px ${GOLD_SOFT} inset;` : `background:${bg};opacity:${intensity};`;
+    html += `<div class="cal-cell" data-date="${r.day.d}" style="${style}cursor:pointer;"><span class="d-num">${dayNum}</span><span class="d-val" style="color:${isHigh?'#0F1F38':PAPER}">${r.total}</span></div>`;
+  });
+  html += `</div></div>`;
+  const box = document.getElementById('calendarView');
+  box.innerHTML = html;
+
+  box.querySelectorAll('.cal-cell[data-date]').forEach(cell=>{
+    cell.addEventListener('mouseenter',(e)=>{
+      const date = cell.dataset.date;
+      const rec = dailyTotals.find(r=>r.day.d===date);
+      const rows = dealerOrder.map(dl=>`<div class="t-row"><span>${dealerKr[dl]}</span><b>${rec.dealerVals[dl]}건</b></div>`).join('');
+      showTip(e.clientX,e.clientY,`<div class="t-title">${date} (${rec.day.wd}) · ${rec.day.dt}</div><div class="t-row"><span>합계</span><b>${rec.total}건</b></div><div style="height:1px;background:rgba(255,255,255,0.1);margin:6px 0;"></div>${rows}`);
+    });
+    cell.addEventListener('mousemove',(e)=>showTip(e.clientX,e.clientY,tooltip.innerHTML));
+    cell.addEventListener('mouseleave',hideTip);
+  });
+
+  // 요일별 평균 패턴 (전체 기간, 현재 모델 필터 반영)
+  const dowOrder = ['월','화','수','목','금','토','일'];
+  const dowStats = dowOrder.map(wd=>{
+    const rows = dailyTotals.filter(r=>r.day.wd===wd);
+    return {wd, avg: rows.reduce((s,r)=>s+r.total,0)/rows.length, n: rows.length};
+  });
+  const maxDow = dowStats.reduce((a,b)=>a.avg>b.avg?a:b);
+  const minDow = dowStats.reduce((a,b)=>a.avg<b.avg?a:b);
+  const highCount = allTotals.length? Math.floor(allTotals.length*0.15) : 0;
+  const highDays = dailyTotals.filter(r=>r.total>=threshold && r.total>0);
+  const highDowCounts = {};
+  dowOrder.forEach(wd=>highDowCounts[wd]=0);
+  highDays.forEach(r=>{highDowCounts[r.day.wd]++;});
+  const dominantHighDow = Object.entries(highDowCounts).sort((a,b)=>b[1]-a[1])[0];
+
+  const modelLabel = activeModel==='ALL' ? '전체 모델' : activeModel+' 모델';
+  const insightEl = document.getElementById('calendarInsight');
+  if(insightEl){
+    insightEl.innerHTML = `${modelLabel} 기준, 요일별 일평균은 <b>${maxDow.wd}요일이 ${fmt1(maxDow.avg)}건</b>으로 가장 높고 <b>${minDow.wd}요일이 ${fmt1(minDow.avg)}건</b>으로 가장 낮습니다 — 주말 상담 후 ${maxDow.wd==='월'?'월요일에 계약을 체결':maxDow.wd+'요일에 계약이 몰리는'} 패턴으로 해석됩니다.
+    고계약일(상위 15%, ${highDays.length}일) 중 가장 많이 나타난 요일은 <b>${dominantHighDow[0]}요일(${dominantHighDow[1]}일)</b>입니다. 다만 이 히트맵은 각 달 내부의 상대적 강도만 보여주므로, 달 사이의 절대치 비교는 01번 월별 추이를 함께 참고해야 합니다.`;
+  }
+}
+
+/* ============ 06 Detail table ============ */
+function renderDetailTable(){
+  const dailyTotals = computeDailyTotals();
+  const data = computeMonthly(dailyTotals);
+  let html = '<thead><tr><th>월</th>';
+  dealerOrder.forEach(d=>html+=`<th>${dealerKr[d]}</th>`);
+  html += '<th>합계</th><th>일평균</th></tr></thead><tbody>';
+  data.forEach(d=>{
+    html += `<tr><td class="name">${d.month}</td>`;
+    dealerOrder.forEach(dl=>html+=`<td>${fmt(d[dl])}</td>`);
+    html += `<td class="hi">${fmt(d.total)}</td><td class="hi">${fmt1(d.total_avg)}</td></tr>`;
+  });
+
+  // 6월 예상(방법1·방법2 평균) 행 추가
+  let forecastSum=0;
+  html += `<tr style="background:rgba(201,169,97,0.05);"><td class="name" style="color:var(--gold-soft);font-style:italic;">6월 예상(평균)*</td>`;
+  dealerOrder.forEach(dl=>{
+    const f = forecastJune(dailyTotals, dl);
+    const avgPred = (f.pred1+f.pred2)/2;
+    forecastSum += avgPred;
+    html += `<td style="color:var(--gold-soft);">${fmt(avgPred)}</td>`;
+  });
+  html += `<td class="hi" style="color:var(--gold-soft);">${fmt(forecastSum)}</td><td class="hi" style="color:var(--gold-soft);">${fmt1(forecastSum/30)}</td></tr>`;
+
+  html += '<tr style="border-top:1.5px solid rgba(201,169,97,0.4);"><td class="name" style="color:var(--gold);">합계(실적, 1~6월16일)</td>';
+  dealerOrder.forEach(dl=>{
+    const sum = data.reduce((s,d)=>s+d[dl],0);
+    html += `<td class="hi">${fmt(sum)}</td>`;
+  });
+  const grandTotal = data.reduce((s,d)=>s+d.total,0);
+  const totalDays = data.reduce((s,d)=>s+d.days,0);
+  html += `<td class="hi">${fmt(grandTotal)}</td><td class="hi">${fmt1(grandTotal/totalDays)}</td></tr></tbody>`;
+  document.getElementById('detailTable').innerHTML = html;
+  const noteEl = document.getElementById('detailTableNote');
+  if(noteEl) noteEl.textContent = '* 6월 예상은 1~5월 패턴 기반 추정치(방법1·방법2 평균)이며 실제 실적이 아닙니다. 02C 섹션에서 두 방법을 상세 비교할 수 있습니다.';
+}
+
+/* ============ INIT ============ */
+renderAll();
+
+</script>
+</body>
+</html>
